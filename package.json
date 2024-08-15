@@ -1,0 +1,20 @@
+{
+  "name": "morphean-oracle",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "dependencies": {
+    "discord.js": "^14.15.3",
+    "mongodb": "^6.8.0",
+    "node-fetch": "^3.3.2",
+    "node-xlsx": "^0.24.0",
+    "xlsx": "^0.20.2"
+  }
+}
