@@ -12,12 +12,19 @@ class Sheet
     {
         this.traits = {};
         this.kith = null;
+        this.house = null;
+        this.secondOathSworn = false;
     }
 
     setKith(kith)
     {
         this.kith = kith;
-        this.favouredRealm = Sheet.FAVOURED_REALMS[kith];
+        this.favouredRealm = Sheet.FavouredRealms[kith];
+    }
+
+    setHouse(house)
+    {
+        this.house = house;
     }
 
     addTrait(trait)
@@ -49,6 +56,7 @@ class Sheet
             {
                 throw new Error("Trait "+traitName+" not found");
             }
+            console.log(trait);
             poolData.dicePool += trait.level;
             if(!trait.canRollUnlearned && trait.level === 0)
             {
@@ -56,6 +64,40 @@ class Sheet
             }
         }
         return poolData;
+    }
+
+    finalize()
+    {
+        switch(this.kith)
+        {
+            case 'Piskie':
+                this.traits.dexterity.setFreeLevels(1);
+                break;
+            case 'Satyr':
+                this.traits.stamina.setFreeLevels(1);
+                break;
+            case 'Sidhe (Arcadian)':
+            case 'Sidhe (Autumn)':
+                console.log("Should be setting free levels on appearance to 2");
+                this.traits.appearance.setFreeLevels(2);
+                break;
+            case 'Troll':
+                this.traits.strength.setFreeLevels(this.secondOathSworn?3:1);
+                break;
+        }
+        switch(this.house)
+        {
+            case 'Beaumayn':
+                this.traits.perception.setFreeLevels(1);
+                break;
+            case 'Leanhaun':
+                this.traits.charisma.setFreeLevels(1);
+                break;
+            case 'Scathach':
+                this.traits.melee.setFreeLevels(1);
+                this.traits.brawl.setFreeLevels(1);
+                break;
+        }
     }
 
     static async fromJSON(json)
@@ -74,6 +116,7 @@ class Sheet
                 sheet.addTrait(new constructor(traitJSON.name, traitJSON.cp, traitJSON.fp, traitJSON.xp));
             }
         }
+        sheet.finalize();
         return sheet;
     }
 
@@ -104,6 +147,16 @@ class Sheet
         };
 
         sheet.setKith(worksheet['P2'].v);
+
+        if(worksheet['I3'])
+        {
+            sheet.setHouse(worksheet['I3'].v);
+        }
+
+        if(worksheet['J48'])
+        {
+            sheet.secondOathSworn = true;
+        }
 
         let readTraitsFromRange = (traitConstructor, addressRange)=>
         {
@@ -138,12 +191,14 @@ class Sheet
         readTraitsFromRange(Background,'A26:F31');
         readTraitsFromRange(Art,'H26:M31');
         readTraitsFromRange(Realm, 'O26:T31');
+        
+        sheet.finalize();
 
         return sheet;
     }
 }
 
-Sheet.FAVOURED_REALMS = {
+Sheet.FavouredRealms = {
     'Boggan':'Actor',
     'Clurichaun':'Actor',
     'Eshu':'Scene',
@@ -158,5 +213,6 @@ Sheet.FAVOURED_REALMS = {
     'Sluagh':'Prop',
     'Troll':'Fae'
 };
+
 
 export default Sheet;

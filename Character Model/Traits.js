@@ -14,16 +14,12 @@ class Rollable
     setFreeLevels(freeLevels)
     {
       this.freeLevels = freeLevels;
+      this.calculateLevel();
     }
 
     removeFreeLevels()
     {
       this.freeLevels = 0;
-    }
-
-    getLevel()
-    {
-      return this.level;
     }
 
     calculateLevel()
@@ -37,7 +33,7 @@ class Rollable
           level++;
           xpToLevel = this.constructor.XP_COST * level;
       }
-      this.level += this.freeLevels;
+      level += this.freeLevels;
       this.level = level;
     }
 

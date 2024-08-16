@@ -21,7 +21,7 @@ export default {
             db.collection('sheets').updateOne({guildId:interaction.guildId, userId:interaction.user.id}, {$set:{sheet:sheetJSON}}, {upsert:true});
             interaction.reply({content:'Your sheet has been updated.', ephemeral:true});
         }).catch((e)=>{
-            logger.warn(e);
+            console.warn(e);
             interaction.reply({content:e.message, ephemeral:true});
         });
     },
