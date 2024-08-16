@@ -1,6 +1,6 @@
 class DiceRoll
 {
-    constructor({traits, dicePool, valid}, diff = 6, spec = false, wyrd = false)
+    constructor({traits, dicePool, valid}, diff = 6, spec = false, wyrd = false, willpower = false)
     {
         this.traits = traits;
         this.dicePool = dicePool;
@@ -9,6 +9,7 @@ class DiceRoll
         this.result = null;
         this.spec = spec;
         this.wyrd = wyrd;
+        this.willpower = willpower;
     }
 
     resolve()
@@ -20,7 +21,7 @@ class DiceRoll
         
         let dice = [];
         let hasAnySuccesses = false;
-        let successes = 0;
+        let successes = this.willpower?1:0;
         let diceRemaining = this.dicePool;
         let handle10s = (this.spec || this.wyrd);
         let hasAny1s = false;

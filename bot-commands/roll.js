@@ -20,6 +20,10 @@ export default {
                 .setName('pool')
                 .setDescription("The pool to roll. For syntax just enter help")
                 .setRequired(true))
+        .addStringOption(option =>
+                option
+                    .setName('modifiers')
+                    .setDescription('A space separated list of modifiers. "wi" or "willpower", "wy" or "wyrd", "spec" or "specialty"'))
     ,
     async execute(interaction) {
         let args = interaction.options.getString('pool').toLowerCase();
@@ -27,6 +31,27 @@ export default {
         {
             interaction.reply({content:helpText});
             return;
+        }
+
+        let mods = interaction.options.getString('modifiers').toLowerCase().split(' ');
+        
+        let willpower = false;
+        let wyrd = false;
+        let specialty = false;
+        for(let mod of mods)
+        {
+            if(mod === 'wi' || mod === 'willpower')
+            {
+                willpower = true;
+            }
+            else if(mod === 'wy' || mod === 'wyrd')
+            {
+                wyrd = true;
+            }
+            else if(mod === 'spec' || mod === 'specialty')
+            {
+                specialty = true;
+            }
         }
 
         let [parts, diff] = args.split('vs');
@@ -62,7 +87,7 @@ export default {
         {
             poolData = {traits: [parts], dicePool:parseInt(parts)};
         }
-        let roll = new DiceRoll(poolData, diff).resolve();
+        let roll = new DiceRoll(poolData, diff, specialty, wyrd, willpower).resolve();
         let dice = roll.dice.map((x)=>x == 1?`__*${x}*__`:(x >= roll.diff?`**${x}**`:x));
         
         interaction.reply({content:`**Pool:** ${roll.traits.join(' + ')}\n**Difficulty:** ${roll.diff}\n**Result:** ${roll.result}\n**Dice:** ${dice.join(" ")}\n**Successes:** ${roll.successes}`});
