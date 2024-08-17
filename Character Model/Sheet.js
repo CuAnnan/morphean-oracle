@@ -56,7 +56,6 @@ class Sheet
             {
                 throw new Error("Trait "+traitName+" not found");
             }
-            console.log(trait);
             poolData.dicePool += trait.level;
             if(!trait.canRollUnlearned && trait.level === 0)
             {

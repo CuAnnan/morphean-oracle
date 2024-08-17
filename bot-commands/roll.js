@@ -33,7 +33,13 @@ export default {
             return;
         }
 
-        let mods = interaction.options.getString('modifiers').toLowerCase().split(' ');
+        
+        let modsRaw = interaction.options.getString('modifiers');
+        let mods = [];
+        if(modsRaw)
+        {
+            mods = modsRaw.toLowerCase().split(' ');
+        }
         
         let willpower = false;
         let wyrd = false;
