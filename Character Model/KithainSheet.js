@@ -22,7 +22,7 @@ class KithainSheet extends Sheet
 
     toJSON()
     {
-        let json = {url:this.url, kith:this.kith, house:this.house, name:this.name, player:this.player, chronicle:this.chronicle, court:this.court, legacies:this.legacies, seeming:this.seeming, motley:this.motley, traits:[]};
+        let json = {url:this.url, kith:this.kith, house:this.house, name:this.name, player:this.player, chronicle:this.chronicle, court:this.court, legacies:this.legacies, seeming:this.seeming, motley:this.motley, secondOathSworn:this.secondOathSworn, traits:[]};
         for(let [key, trait] of Object.entries(this.traits))
         {
             try
@@ -77,6 +77,7 @@ class KithainSheet extends Sheet
         this.house = json.house;
         this.seeming = json.seeming;
         this.motley = json.motley;
+        this.secondOathSworn = json.secondOathSworn;
     }
 
     finalize()
@@ -157,6 +158,7 @@ class KithainSheet extends Sheet
         sheet.legacies.unseelie = worksheet['J2']?.v;
         sheet.seeming = worksheet['P1']?.v;
         sheet.motley = worksheet['P3']?.v;
+        sheet.secondOathSworn = !!worksheet['J48'];
 
 
         // helper function that only matters here.
