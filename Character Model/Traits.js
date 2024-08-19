@@ -9,12 +9,18 @@ class Rollable
       this.freeLevels = 0;
       this.canRollUnlearned = this.constructor.CAN_ROLL_UNLEARNED;
       this.calculateLevel();
+      this.specialty = null;
     }
 
     setFreeLevels(freeLevels)
     {
       this.freeLevels = freeLevels;
       this.calculateLevel();
+    }
+
+    setSpecialty(specialty)
+    {
+        this.specialty = specialty;
     }
 
     removeFreeLevels()
@@ -52,6 +58,7 @@ class Rollable
     {
         return {
             type:this.constructor.name,
+            specialty:this.specialty,
             name:this.name,
             cp:this.cp,
             xp:this.xp,
@@ -133,14 +140,9 @@ class Realm extends Rollable
 
     toJSON()
     {
-        return {
-            type:'Realm',
-            name:this.name,
-            cp:this.cp,
-            xp:this.xp,
-            fp:this.fp,
-            favoured:this.favoured
-        };
+        let json = super.toJSON();
+        json.favoured = this.favoured;
+        return json;
     }
 }
 Realm.XP_COST = 3;

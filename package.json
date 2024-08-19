@@ -11,8 +11,13 @@
   "description": "",
   "type": "module",
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "discord.js": "^14.15.3",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "http-errors": "^2.0.0",
     "mongodb": "^6.8.0",
+    "morgan": "^1.10.0",
     "node-fetch": "^3.3.2",
     "node-xlsx": "^0.24.0",
     "xlsx": "^0.20.2"

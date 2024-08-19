@@ -2,8 +2,11 @@
 
 import {SlashCommandBuilder} from 'discord.js';
 import MongoConnectionFactory from '../MongoConnectionFactory.js';
-import Sheet from '../Character Model/Sheet.js';
+import KithainSheet from '../Character Model/KithainSheet.js';
 import DiceRoll from '../DiceRoll.js';
+
+import userHash from "../userHashFunction.js";
+
 
 let helpText = '***roll syntax***\n\n\
 `/roll <n>` This will roll <n> dice. Eg. `/roll 6` will roll 6 dice\n\
@@ -78,8 +81,9 @@ export default {
             {
                 let db = MongoConnectionFactory.getInstance();
                 let collection = db.collection('sheets');
-                let sheetJSON = await collection.findOne({guildId: interaction.guildId, userId: interaction.user.id});
-                let sheet = await Sheet.fromJSON(sheetJSON.sheet);
+                let hashHex = await userHash(interaction);
+                let sheetJSON = await collection.findOne({digest:hashHex});
+                let sheet = await KithainSheet.fromJSON(sheetJSON.sheet);
                 poolData = sheet.getPool(poolParts);
             }
             catch(e)

@@ -1,5 +1,6 @@
 import {MongoClient} from 'mongodb';
 
+
 class MongoConnectionFactory
 {
     static async init(conf)
