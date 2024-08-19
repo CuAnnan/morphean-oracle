@@ -21,11 +21,14 @@ export default {
         const url = `${webPresence}/sheets/view/${hashHex}`;
         const db = MongoConnectionFactory.getInstance();
         const {sheet} = await db.collection('sheets').findOne({digest:hashHex});
+        if(!sheet)
+        {
+            interaction.reply({message:"No sheet has been found for you on this server.", ephemeral:true});
+        }
 
         const qrCode = await QRCode.toDataURL(url);
         const bufferedQRCode = new Buffer.from(qrCode.split(",")[1], "base64");
         const qrCodeAsDiscordAttachment = new AttachmentBuilder(bufferedQRCode).setName('qrcode.png');
-
 
         const embed = new EmbedBuilder()
             .setColor(0x0099FF)

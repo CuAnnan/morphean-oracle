@@ -25,7 +25,6 @@ export default {
             db.collection('sheets').updateOne({digest:hashHex}, {$set:{sheet:sheetJSON}}, {upsert:true});
             interaction.reply({content:'Your sheet has been updated.', ephemeral:true});
         }).catch((e)=>{
-            console.warn(e);
             interaction.reply({content:e.message, ephemeral:true});
         });
     },

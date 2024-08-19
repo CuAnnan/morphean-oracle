@@ -91,6 +91,7 @@ export default {
                 console.log(e);
                 console.log(e.message);
                 interaction.reply({content:e.message, ephemeral:true});
+                return;
             }
         }
         else
