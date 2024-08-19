@@ -32,6 +32,7 @@ class Sheet
 
     }
 
+
     getPool(traitNames)
     {
         let poolData = {
