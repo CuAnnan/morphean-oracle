@@ -34,6 +34,6 @@ export default {
             .setDescription('Your QR Code:')
             .setImage('attachment://qrcode.png');
 
-        interaction.reply({ embeds: [embed], files:[qrCodeAsDiscordAttachment] });
+        interaction.reply({ embeds: [embed], files:[qrCodeAsDiscordAttachment], ephemeral:true });
     },
 };
