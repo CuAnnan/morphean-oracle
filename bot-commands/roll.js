@@ -83,6 +83,11 @@ export default {
                 let collection = db.collection('sheets');
                 let hashHex = await userHash(interaction);
                 let sheetJSON = await collection.findOne({digest:hashHex});
+                if(!sheetJSON)
+                {
+                    interaction.reply({content:"No sheet was found for you on this server", ephemeral:true});
+                    return;
+                }
                 let sheet = await KithainSheet.fromJSON(sheetJSON.sheet);
                 poolData = sheet.getPool(poolParts);
             }
@@ -99,7 +104,7 @@ export default {
             poolData = {traits: [parts], dicePool:parseInt(parts)};
         }
         let roll = new DiceRoll(poolData, diff, specialty, wyrd, willpower).resolve();
-        let dice = roll.dice.map((x)=>x == 1?`__*${x}*__`:(x >= roll.diff?`**${x}**`:x));
+        let dice = roll.dice.map((x)=>x === 1?`__*${x}*__`:(x >= roll.diff?`**${x}**`:x));
         
         interaction.reply({content:`**Pool:** ${roll.traits.join(' + ')}\n**Difficulty:** ${roll.diff}\n**Result:** ${roll.result}\n**Dice:** ${dice.join(" ")}\n**Successes:** ${roll.successes}`});
     },

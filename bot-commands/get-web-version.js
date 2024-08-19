@@ -1,7 +1,6 @@
 import userHash from "../userHashFunction.js";
 import {SlashCommandBuilder} from 'discord.js';
 import { createRequire } from "module";
-import KithainSheet from "../Character Model/KithainSheet.js";
 import MongoConnectionFactory from "../MongoConnectionFactory.js";
 import QRCode from 'qrcode'
 
@@ -24,6 +23,7 @@ export default {
         if(!sheet)
         {
             interaction.reply({message:"No sheet has been found for you on this server.", ephemeral:true});
+            return;
         }
 
         const qrCode = await QRCode.toDataURL(url);
