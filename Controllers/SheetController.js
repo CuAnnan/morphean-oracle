@@ -26,7 +26,31 @@ class SheetController extends Controller
         let collection = this.db.collection('sheets');
         let sheetJSON = await collection.findOne({digest:req.params.hash});
         let sheet = await KithainSheet.fromJSON(sheetJSON.sheet);
-        res.render('sheets/kithainsheet', {sheet, sheetStructure});
+
+        let kith = null;
+        if(sheet.kith)
+        {
+            kith = await this.db.collection('kiths').findOne({name:sheet.kith});
+        }
+        let house = null;
+        if(sheet.house)
+        {
+            house = await this.db.collection('houses').findOne({name:sheet.house});
+        }
+
+        let arts = [];
+        for(let [name, knownArt] of Object.entries(sheet.structuredTraits.art))
+        {
+            let art = {name:knownArt.name, cantrips:[]};
+            let artData = await this.db.collection('arts').findOne({name:art.name});
+            for(let i = 0; i < knownArt.level; i++)
+            {
+                art.cantrips.push(artData.levels[i])
+            }
+            arts.push(art);
+        }
+
+        res.render('sheets/kithainsheet', {sheet, sheetStructure, kith, house, arts});
     }
 }
 

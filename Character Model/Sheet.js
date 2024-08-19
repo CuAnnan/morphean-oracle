@@ -22,7 +22,7 @@ class Sheet
         let cName = trait.constructor.name.toLowerCase();
         if(!this.structuredTraits[cName])
         {
-            this.structuredTraits[cName] = [];
+            this.structuredTraits[cName] = {};
         }
         this.structuredTraits[cName][trait.name] = trait;
     }
