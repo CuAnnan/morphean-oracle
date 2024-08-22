@@ -136,7 +136,9 @@ let traitBoxes = function(trait)
 </div>
 <div class="container">
     <div class="row">
-        <div class="col"></div>
+        <div class="col">
+
+        </div>
         <div class="col">
             <div class="row"><h4 class="col text-center">Glamour</h4></div>
             <div class="row">
@@ -165,6 +167,54 @@ let traitBoxes = function(trait)
             </div>
 
         </div>
-        <div class="col"></div>
+        <div class="col">
+            <div class="row"><h4 class="col text-center">Health</h4></div>
+            <div class="row">
+                <div class="col text-end">Unbruised</div>
+                <div class="col"><i class="bx bx-square"></i></div>
+            </div>
+            <% if(sheet.kith === 'Troll'){
+                if(sheet.secondOathSworn)
+                {
+                %>
+                <div class="row">
+                    <div class="col text-end">Unbruised</div>
+                    <div class="col"><i class="bx bx-square"></i></div>
+                </div>
+                <div class="row">
+                    <div class="col text-end">Unbruised</div>
+                    <div class="col"><i class="bx bx-square"></i></div>
+                </div>
+                <%
+                }
+            %>
+
+                <div class="row">
+                    <div class="col text-end">Unbruised</div>
+                    <div class="col"><i class="bx bx-square"></i></div>
+                </div>
+            <% } %>
+            <div class="row">
+                <div class="col text-end">-1</div>
+                <div class="col"><i class="bx bx-square"></i></div>
+            </div>
+            <div class="row">
+                <div class="col text-end">-1</div>
+                <div class="col"><i class="bx bx-square"></i></div>
+            </div>
+            <div class="row">
+                <div class="col text-end">-2</div>
+                <div class="col"><i class="bx bx-square"></i></div>
+            </div>
+            <div class="row">
+                <div class="col text-end">-2</div>
+                <div class="col"><i class="bx bx-square"></i></div>
+            </div>
+            <div class="row">
+                <div class="col text-end">Incapacitated</div>
+                <div class="col"><i class="bx bx-square"></i></div>
+            </div>
+
+        </div>
     </div>
 </div>
