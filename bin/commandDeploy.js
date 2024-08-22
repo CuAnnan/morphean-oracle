@@ -3,7 +3,7 @@ import { REST, Routes } from 'discord.js';
 
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
-const conf = require('./conf.json');
+const conf = require('../conf.json');
 let {clientId, token} = conf;
 
 

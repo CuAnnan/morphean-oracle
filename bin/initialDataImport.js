@@ -1,10 +1,10 @@
 'use strict';
 import fetch from "node-fetch";
-import MongoConnectionFactory from "./MongoConnectionFactory.js";
+import MongoConnectionFactory from "../MongoConnectionFactory.js";
 import xlsx from "xlsx";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
-const conf = require('./conf.json');
+const conf = require('../conf.json');
 
 const url = "https://docs.google.com/spreadsheets/d/1CHtXxrQBslVb0tBkFHhB23EuZYj-FDCJFYf2vIrzwyE/pub?output=xlsx";
 
