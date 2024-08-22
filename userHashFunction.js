@@ -7,7 +7,7 @@ const {subtle} = crypto;
 export default async function(interaction)
 {
     const ec = new TextEncoder();
-    let digestBuffer = await subtle.digest('SHA-512', ec.encode(`${interaction.guildId}:${interaction.user.id}`));
+    let digestBuffer = await subtle.digest('SHA-256', ec.encode(`${interaction.guildId}:${interaction.user.id}`));
     const hashArray = Array.from(new Uint8Array(digestBuffer)); // convert buffer to byte array
     return hashArray
         .map((b) => b.toString(16).padStart(2, "0"))
