@@ -24,7 +24,7 @@ class SheetController extends Controller
     async showSheet(req, res)
     {
         let collection = this.db.collection('sheets');
-        let sheetJSON = await collection.findOne({nano:req.params.hash});
+        let sheetJSON = await collection.findOne({nanoid:req.params.hash});
         if(!sheetJSON)
         {
             res.render("noSheetFound");

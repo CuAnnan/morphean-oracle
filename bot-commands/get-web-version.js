@@ -18,7 +18,7 @@ export default {
     async execute(interaction) {
         const hashHex = await userHash(interaction);
         const db = MongoConnectionFactory.getInstance();
-        const {nano, sheet} = await db.collection('sheets').findOne({digest:hashHex});
+        const {nanoid, sheet}= await db.collection('sheets').findOne({digest:hashHex});
 
         if(!sheet)
         {
@@ -26,7 +26,7 @@ export default {
             return;
         }
 
-        const url = `${webPresence}/sheets/view/${nano}`;
+        const url = `${webPresence}/sheets/view/${nanoid}`;
 
         const qrCode = await QRCode.toDataURL(url);
         const bufferedQRCode = new Buffer.from(qrCode.split(",")[1], "base64");
@@ -37,6 +37,7 @@ export default {
             .setTitle(sheet.name)
             .setURL(url)
             .setDescription('Your QR Code:')
+            .addFields({ name: 'Your link', value: url})
             .setImage('attachment://qrcode.png');
 
         interaction.reply({ embeds: [embed], files:[qrCodeAsDiscordAttachment], ephemeral:true });
