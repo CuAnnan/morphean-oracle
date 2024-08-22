@@ -4,186 +4,31 @@
     {
         cursor:pointer;
     }
+
 </style>
-<% let traitDots = function(trait){
-    for(let i = 0; i < trait.level; i++)
-    {
-        %><i class="bx bxs-circle"></i><%
-    }
-    for(let i = 0; i < 5-trait.level; i++)
-    {
-        %><i class="bx bx-circle"></i><%
-    }
-}
-%>
-<div class="container">
-    <div class="row"><h2 class="col text-center">Personal Details</h2></div>
-    <div class="row">
-        <div class="col">
-            <div class="row">
-                <div class="col"><strong>Name</strong></div>
-                <div class="col"><%-sheet.name%></div>
-            </div>
-            <div class="row">
-                <div class="col"><strong>Player</strong></div>
-                <div class="col"><%-sheet.player%></div>
-            </div>
-            <div class="row">
-                <div class="col"><strong>Chronicle</strong></div>
-                <div class="col"><%-sheet.chronicle%></div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="row">
-                <div class="col"><strong>Court</strong></div>
-                <div class="col"><%-sheet.court%></div>
-            </div>
-            <div class="row">
-                <div class="col"><strong>Legacies</strong></div>
-                <div class="col"><%-sheet.legacies.seelie%> / <%- sheet.legacies.unseelie%></div>
-            </div>
-            <div class="row">
-                <div class="col"><strong>House</strong></div>
-                <div class="col"><%-sheet.house%></div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="row">
-                <div class="col"><strong>Seeming</strong></div>
-                <div class="col"><%-sheet.seeming%></div>
-            </div>
-            <div class="row">
-                <div class="col"><strong>Kith</strong></div>
-                <div class="col"><%-sheet.kith%></div>
-            </div>
-            <div class="row">
-                <div class="col"><strong>Motley</strong></div>
-                <div class="col"><%-sheet.motley%></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row"><h2 class="col text-center">Attributes</h2></div>
-    <div class="row">
-        <% for(let [useGroupName, useGroup] of Object.entries(sheetStructure.attributes)) {
-        %><div class="col">
-            <div class="row"><div class="col text-center"><strong><%- useGroupName%></strong></div></div>
-            <% for(let traitName of useGroup)
-            {
-                let trait = sheet.traits[traitName.toLowerCase()];
-            %>
-                <div class="row">
-                    <div class="col"><strong class="traitName" title="<%-trait.specialty%>"><%- trait.name + (trait.specialty?"*":"")%></strong></div>
-                    <div class="col"><% traitDots(trait) %></div>
-                </div>
-            <%
-            }
-            %>
-        </div><%
-        }%>
-    </div>
-    <div class="row"><h2 class="col text-center">Abilities</h2></div>
-    <div class="row">
-        <% for(let [useGroupName, useGroup] of Object.entries(sheetStructure.abilities)) {
-        %><div class="col">
-            <div class="row"><div class="col text-center"><strong><%- useGroupName%></strong></div></div>
-            <% for(let traitName of useGroup)
-            {
-                let trait = sheet.traits[traitName.toLowerCase()];
-            %>
-            <div class="row">
-                <div class="col"><strong class="traitName" title="<%-trait.specialty%>"><%- trait.name + (trait.specialty?"*":"")%></strong></div>
-                <div class="col"><% traitDots(trait) %></div>
-            </div>
-            <%
-            }
-            %>
-        </div><%
-        }%>
-    </div>
-    <div class="row"><h2 class="col text-center">Advantages</h2></div>
-    <div class="row">
-        <div class="col">
-            <div class="row"><strong class="text-center">Backgrounds</strong></div>
-            <% for(let [name, background] of Object.entries(sheet.structuredTraits.background)) {%>
-            <div class="row">
-                <div class="col"><strong><%- background.name %></strong></div>
-                <div class="col"><% traitDots(background) %></div>
-            </div>
-            <%} %>
-        </div>
-        <div class="col">
-            <div class="row"><strong class="text-center">Arts</strong></div>
-            <% for(let [name, art] of Object.entries(sheet.structuredTraits.art)) {%>
-            <div class="row">
-                <div class="col"><strong><%- art.name %></strong></div>
-                <div class="col"><% traitDots(art) %></div>
-            </div>
-            <%} %>
-        </div>
-        <div class="col">
-            <div class="row"><strong class="text-center">Realms</strong></div>
-            <% for(let [name, realm] of Object.entries(sheet.structuredTraits.realm)) {%>
-                <div class="row">
-                    <div class="col"><strong<%- realm.favoured?' style="font-style: italic;"':"" %>><%- realm.name %></strong></div>
-                    <div class="col"><% traitDots(realm) %></div>
-                </div>
-            <%} %>
-        </div>
-    </div>
-</div>
-<div class="container">
-    <div class="row">
-        <h3 class="col text-center"><%- kith.name%></h3>
-    </div>
-    <div class="row">
-        <div class="col-2"><strong><%- kith.frailty.name %></strong></div>
-        <div class="col"><%- kith.frailty.mechanics %></div>
-    </div>
-    <div class="row">
-        <div class="col-2"><strong><%- kith.birthrights[0].name%></strong></div>
-        <div class="col"><%- kith.birthrights[0].mechanics%></div>
-    </div>
-    <div class="row">
-        <div class="col-2"><strong><%- kith.birthrights[1].name%></strong></div>
-        <div class="col"><%- kith.birthrights[1].mechanics%></div>
-    </div>
-</div>
-<% if(house)
-{
-%>
-<div class="container">
-    <div class="row">
-        <h3 class="col text-center">House <%- house.name%></h3>
-    </div>
-    <div class="row">
-        <div class="col-2"><strong>Boon</strong></div>
-        <div class="col"><%- house.boon %></div>
-    </div>
-    <div class="row">
-        <div class="col-2"><strong>Flaw</strong></div>
-        <div class="col"><%- house.flaw %></div>
-    </div>
-</div>
-<%
-}
-%>
 
 <div class="container">
-    <div class="row">
-        <h3 class="col text-center">Cantrips</h3>
-    </div>
-<% for (let art of arts){%>
-    <div class="row">
-        <h4 class="col text-center"><%- art.name %></h4>
-    </div>
-    <% for (let cantrip of art.cantrips){%>
-        <div class="row">
-            <div class="col-2"><%- cantrip.name %></div>
-            <div class="col"><%- cantrip.effect %></div>
+    <ul class="nav nav-tabs" id="sheetStructure" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="sheet-tab" data-bs-toggle="tab" data-bs-target="#sheet" type="button" role="tab" aria-controls="sheet" aria-selected="true">Sheet</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="kith-and-house-tab" data-bs-toggle="tab" data-bs-target="#kithAndHouse" type="button" role="tab" aria-controls="kithAndHouse" aria-selected="false">Kith and House</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="arts-tab" data-bs-toggle="tab" data-bs-target="#arts" type="button" role="tab" aria-controls="arts" aria-selected="false">Arts</button>
+        </li>
+    </ul>
+    <div class="tab-content" id="sheetStructureContent">
+        <div class="tab-pane fade show active" id="sheet" role="tabpanel" aria-labelledby="sheet-tab">
+            <%- include('./kithSheetStructure') %>
         </div>
-    <%}%>
-<%}%>
+        <div class="tab-pane fade" id="kithAndHouse" role="tabpanel" aria-labelledby="kith-and-house-tab">
+            <%- include('./kithAndHouse') %>
+        </div>
+        <div class="tab-pane fade" id="arts" role="tabpanel" aria-labelledby="arts-tab">
+            <%- include('./arts') %>
+        </div>
+    </div>
 </div>
-
 <%- include('../inc/footer') %>

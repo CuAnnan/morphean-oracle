@@ -1,4 +1,5 @@
-class Rollable
+'use strict';
+class Trait
 {
     constructor(name, cp, fp, xp)
     {
@@ -23,11 +24,6 @@ class Rollable
         this.specialty = specialty;
     }
 
-    removeFreeLevels()
-    {
-      this.freeLevels = 0;
-    }
-
     calculateLevel()
     {
       let level= this.constructor.BASE  + this.cp + Math.floor(this.fp/this.constructor.FP_COST);
@@ -43,17 +39,6 @@ class Rollable
       this.level = level;
     }
 
-    setCP(cp)
-    {
-      this.cp = cp;
-
-    }
-
-    setXP(xp)
-    {
-      this.xp = xp;
-    }
-
     toJSON()
     {
         return {
@@ -62,27 +47,30 @@ class Rollable
             name:this.name,
             cp:this.cp,
             xp:this.xp,
-            fp:this.fp
+            fp:this.fp,
+            freeLevels:this.freeLevels
         };
     }
 
     static fromJSON(json)
     {
-        return new this(json.name, json.cp?json.cp:0, json.fp?json.fp:0, json.xp?json.xp:0);
+        let trait = new this(json.name, json.cp?json.cp:0, json.fp?json.fp:0, json.xp?json.xp:0);
+        trait.setFreeLevels(json.freeLevels);
+        return trait;
     }
 }
-Rollable.BASE = 0;
-Rollable.XP_COST;
-Rollable.FP_COST;
-Rollable.FIRST_XP_COST;
-Rollable.CAN_ROLL_UNLEARNED = false;
+Trait.BASE = 0;
+Trait.XP_COST = 1;
+Trait.FP_COST = 1;
+Trait.FIRST_XP_COST = 1;
+Trait.CAN_ROLL_UNLEARNED = false;
 
-class Attribute extends Rollable{};
+class Attribute extends Trait{}
 Attribute.XP_COST = 4;
 Attribute.BASE = 1;
 Attribute.FP_COST = 5;
 
-class Ability extends Rollable
+class Ability extends Trait
 {
   constructor(name, cp, fp, xp)
   {
@@ -95,22 +83,22 @@ Ability.FP_COST = 2;
 Ability.CAN_ROLL_UNLEARNED=true;
 Ability.UNLEARNED_PENALTY=0;
 
-class Talent extends Ability{};
-class Skill extends Ability{};
+class Talent extends Ability{}
+class Skill extends Ability{}
 Skill.UNLEARNED_PENALTY = +1;
-class Knowledge extends Ability{};
+class Knowledge extends Ability{}
 Knowledge.CAN_ROLL_UNLEARNED=false;
 
 
 
-class Art extends Rollable{};
+class Art extends Trait{}
 Art.FP_COST = 5;
 Art.XP_COST = 4;
 Art.FIRST_XP_COST = 7;
 
 
 
-class Glamour extends Rollable
+class Glamour extends Trait
 {
   constructor(cp, fp, xp)
   {
@@ -119,8 +107,9 @@ class Glamour extends Rollable
 }
 Glamour.XP_COST = 3;
 Glamour.FP_COST = 3;
+Glamour.BASE = 4;
 
-class Willpower extends Rollable
+class Willpower extends Trait
 {
   constructor(cp, fp, xp)
   {
@@ -129,8 +118,9 @@ class Willpower extends Rollable
 }
 Willpower.FP_COST = 1;
 Willpower.XP_COST = 2;
+Willpower.BASE = 4;
 
-class Realm extends Rollable
+class Realm extends Trait
 {
     constructor(name, cp, fp, xp, favoured)
     {
@@ -149,9 +139,9 @@ Realm.XP_COST = 3;
 Realm.FIRST_XP_COST =5;
 Realm.FP_COST = 2;
 
-class Background extends Ability{};
+class Background extends Ability{}
 Background.FP_COST = 1;
 
 export {
-    Attribute, Ability, Talent, Skill, Knowledge, Art, Realm, Background
+    Trait, Attribute, Ability, Talent, Skill, Knowledge, Art, Realm, Background, Glamour, Willpower
 };

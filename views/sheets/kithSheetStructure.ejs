@@ -1,0 +1,170 @@
+<% let traitDots = function(trait, max=5)
+{
+    for(let i = 0; i < trait.level; i++)
+    {
+        %><i class="trait bx bxs-circle"></i><%
+    }
+    for(let i = trait.level; i < max; i++)
+    {
+        %><i class="trait bx bx-circle"></i><%
+    }
+}
+let traitBoxes = function(trait)
+{
+    for(let i = 0; i < trait.level; i++)
+    {
+        %><i class="traitBox trait bx bx-square"></i><%
+    }
+    for(let i = trait.level ; i < 10; i++)
+    {
+        %><i class="traitBox trait bx bxs-square"></i><%
+    }
+} %>
+<div class="row"><h2 class="col text-center">Personal Details</h2></div>
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <div class="col"><strong>Name</strong></div>
+            <div class="col"><%-sheet.name%></div>
+        </div>
+        <div class="row">
+            <div class="col"><strong>Player</strong></div>
+            <div class="col"><%-sheet.player%></div>
+        </div>
+        <div class="row">
+            <div class="col"><strong>Chronicle</strong></div>
+            <div class="col"><%-sheet.chronicle%></div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="row">
+            <div class="col"><strong>Court</strong></div>
+            <div class="col"><%-sheet.court%></div>
+        </div>
+        <div class="row">
+            <div class="col"><strong>Legacies</strong></div>
+            <div class="col"><%-sheet.legacies.seelie%> / <%- sheet.legacies.unseelie%></div>
+        </div>
+        <div class="row">
+            <div class="col"><strong>House</strong></div>
+            <div class="col"><%-sheet.house%></div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="row">
+            <div class="col"><strong>Seeming</strong></div>
+            <div class="col"><%-sheet.seeming%></div>
+        </div>
+        <div class="row">
+            <div class="col"><strong>Kith</strong></div>
+            <div class="col"><%-sheet.kith%></div>
+        </div>
+        <div class="row">
+            <div class="col"><strong>Motley</strong></div>
+            <div class="col"><%-sheet.motley%></div>
+        </div>
+    </div>
+</div>
+
+<div class="row"><h2 class="col text-center">Attributes</h2></div>
+<div class="row">
+    <% for(let [useGroupName, useGroup] of Object.entries(sheetStructure.attributes)) {
+    %><div class="col">
+        <div class="row"><div class="col text-center"><strong><%- useGroupName%></strong></div></div>
+        <% for(let traitName of useGroup)
+        {
+            let trait = sheet.traits[traitName.toLowerCase()];
+        %>
+        <div class="row">
+            <div class="col"><strong class="traitName" title="<%-trait.specialty%>"><%- trait.name + (trait.specialty?"*":"")%></strong></div>
+            <div class="col"><% traitDots(trait) %></div>
+        </div>
+        <%
+        }
+        %>
+    </div><%
+    }%>
+</div>
+<div class="row"><h2 class="col text-center">Abilities</h2></div>
+<div class="row">
+    <% for(let [useGroupName, useGroup] of Object.entries(sheetStructure.abilities)) {
+    %><div class="col">
+        <div class="row"><div class="col text-center"><strong><%- useGroupName%></strong></div></div>
+        <% for(let traitName of useGroup)
+        {
+            let trait = sheet.traits[traitName.toLowerCase()];
+        %>
+        <div class="row">
+            <div class="col"><strong class="traitName" title="<%-trait.specialty%>"><%- trait.name + (trait.specialty?"*":"")%></strong></div>
+            <div class="col"><% traitDots(trait) %></div>
+        </div>
+        <%
+        }
+        %>
+    </div><%
+    }%>
+</div>
+<div class="row"><h2 class="col text-center">Advantages</h2></div>
+<div class="row">
+    <div class="col">
+        <div class="row"><strong class="text-center">Backgrounds</strong></div>
+        <% for(let [name, background] of Object.entries(sheet.structuredTraits.background)) {%>
+            <div class="row">
+                <div class="col"><strong><%- background.name %></strong></div>
+                <div class="col"><% traitDots(background) %></div>
+            </div>
+        <%} %>
+    </div>
+    <div class="col">
+        <div class="row"><strong class="text-center">Arts</strong></div>
+        <% for(let [name, art] of Object.entries(sheet.structuredTraits.art)) {%>
+            <div class="row">
+                <div class="col"><strong><%- art.name %></strong></div>
+                <div class="col"><% traitDots(art) %></div>
+            </div>
+        <%} %>
+    </div>
+    <div class="col">
+        <div class="row"><strong class="text-center">Realms</strong></div>
+        <% for(let [name, realm] of Object.entries(sheet.structuredTraits.realm)) {%>
+            <div class="row">
+                <div class="col"><strong<%- realm.favoured?' style="font-style: italic;"':"" %>><%- realm.name %></strong></div>
+                <div class="col"><% traitDots(realm) %></div>
+            </div>
+        <%} %>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col"></div>
+        <div class="col">
+            <div class="row"><h4 class="col text-center">Glamour</h4></div>
+            <div class="row">
+                <div class="col text-center"><% traitDots(sheet.traits.glamour, 10) %></div>
+            </div>
+            <div class="row">
+                <div class="col text-center"><% traitBoxes(sheet.traits.glamour) %></div>
+            </div>
+
+            <div class="row"><h4 class="col text-center">Willpower</h4></div>
+            <div class="row">
+                <div class="col text-center"><% traitDots(sheet.traits.willpower, 10) %></div>
+            </div>
+            <div class="row">
+                <div class="col text-center"><% traitBoxes(sheet.traits.willpower) %></div>
+            </div>
+
+            <div class="row"><h4 class="col text-center">Nightmare</h4></div>
+            <div class="row">
+                <div class="col text-center"><% traitDots(sheet.traits.nightmare, 10) %></div>
+            </div>
+
+            <div class="row"><h4 class="col text-center">Banality</h4></div>
+            <div class="row">
+                <div class="col text-center"><% traitDots(sheet.traits.banality, 10) %></div>
+            </div>
+
+        </div>
+        <div class="col"></div>
+    </div>
+</div>

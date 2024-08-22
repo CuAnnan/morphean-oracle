@@ -1,6 +1,5 @@
 import userHash from "../userHashFunction.js";
 import {SlashCommandBuilder} from 'discord.js';
-import { createRequire } from "module";
 import KithainSheet from "../Character Model/KithainSheet.js";
 import MongoConnectionFactory from "../MongoConnectionFactory.js";
 
@@ -21,7 +20,7 @@ export default {
 
         KithainSheet.fromGoogleSheetsURL(sheet.url).then(async function(sheet){
             let sheetJSON = sheet.toJSON();
-            db.collection('sheets').updateOne({digest:hashHex}, {$set:{sheet:sheetJSON}}, {upsert:true});
+            db.collection('sheets').updateOne({digest:hashHex}, {$set:{sheet:sheetJSON, guildId:interaction.guildId}}, {upsert:true});
             interaction.reply({content:'Your sheet has been updated.', ephemeral:true});
         }).catch((e)=>{
             interaction.reply({content:e.message, ephemeral:true});

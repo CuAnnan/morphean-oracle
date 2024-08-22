@@ -1,10 +1,10 @@
 import Sheet from './Sheet.js';
 
-import {Attribute, Talent, Skill, Knowledge, Art, Realm, Background} from './Traits.js';
+import {Trait, Attribute, Talent, Skill, Knowledge, Art, Realm, Background, Glamour, Willpower} from './Traits.js';
 import fetch from "node-fetch";
 import xlsx from "xlsx";
 
-const constructors = {Attribute, Talent, Skill, Knowledge, Art, Realm, Background};
+const constructors = {Trait, Attribute, Talent, Skill, Knowledge, Art, Realm, Background, Glamour, Willpower};
 
 class KithainSheet extends Sheet
 {
@@ -18,6 +18,10 @@ class KithainSheet extends Sheet
         this.motley = null;
         this.seeming = null;
         this.secondOathSworn = false;
+        this.glamour = 0;
+        this.willpower = 0;
+        this.nightmare = 0;
+        this.banality = 0;
     }
 
     toJSON()
@@ -56,6 +60,12 @@ class KithainSheet extends Sheet
         if(traitJSON.type ==='Realm')
         {
             this.addTrait(new constructor(traitJSON.name, traitJSON.cp, traitJSON.fp, traitJSON.xp, traitJSON.name === this.favouredRealm));
+        }
+        if(traitJSON.type === 'Glamour' || traitJSON.type === 'Willpower')
+        {
+            let trait = new constructor(traitJSON.cp, traitJSON.fp, traitJSON.xp);
+            trait.setFreeLevels(traitJSON.freeLevels);
+            this.addTrait(trait);
         }
         else
         {
@@ -150,6 +160,7 @@ class KithainSheet extends Sheet
         {
             sheet.secondOathSworn = true;
         }
+
         sheet.name = worksheet['B1']?.v;
         sheet.player = worksheet['B2']?.v;
         sheet.chronicle = worksheet['B3']?.v;
@@ -159,7 +170,6 @@ class KithainSheet extends Sheet
         sheet.seeming = worksheet['P1']?.v;
         sheet.motley = worksheet['P3']?.v;
         sheet.secondOathSworn = !!worksheet['J48'];
-
 
         // helper function that only matters here.
         // doing it this way erases the need to address scope. Because the worksheet and sheet variables only exist in this function.
@@ -206,6 +216,33 @@ class KithainSheet extends Sheet
         readTraitsFromRange(Background,'A26:F31');
         readTraitsFromRange(Art,'H26:M31');
         readTraitsFromRange(Realm, 'O26:T31');
+
+        let glamour = new Glamour(
+            worksheet['K44']?worksheet['K44'].v:0,
+            worksheet['L44']?worksheet['L44'].v:0,
+            worksheet['M44']?worksheet['M44'].v:0
+        );
+        if(worksheet['J44'])
+        {
+            glamour.setFreeLevels(1);
+        }
+        sheet.addTrait(glamour);
+
+        let willpower = new Willpower(
+            worksheet['K45']?worksheet['K45'].v:0,
+            worksheet['L45']?worksheet['L45'].v:0,
+            worksheet['M45']?worksheet['M45'].v:0
+        );
+        if(worksheet['J45'])
+        {
+            willpower.setFreeLevels(1);
+        }
+        sheet.addTrait(willpower);
+
+        let nightmare = new Trait('Nightmare', worksheet['J46']?worksheet['J46'].v:0);
+        sheet.addTrait(nightmare);
+        let banality = new Trait('Banality', worksheet['J47']?worksheet['J47'].v:3);
+        sheet.addTrait(banality);
 
         sheet.finalize();
 

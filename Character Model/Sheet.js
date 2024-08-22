@@ -1,7 +1,4 @@
 'use strict';
-import xlsx from 'xlsx';
-import fetch from 'node-fetch';
-
 
 class Sheet
 {
@@ -53,6 +50,7 @@ class Sheet
                 poolData.valid = false;
             }
         }
+
         return poolData;
     }
 

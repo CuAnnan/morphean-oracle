@@ -22,7 +22,7 @@ export default {
 
             let hashHex = await userHash(interaction);
 
-            db.collection('sheets').updateOne({digest:hashHex}, {$set:{sheet:sheetJSON}}, {upsert:true});
+            db.collection('sheets').updateOne({digest:hashHex}, {$set:{sheet:sheetJSON, guildId:interaction.guildId}}, {upsert:true});
             interaction.reply({content:'Your sheet has been updated.', ephemeral:true});
         }).catch((e)=>{
             interaction.reply({content:e.message, ephemeral:true});
