@@ -24,7 +24,13 @@ class SheetController extends Controller
     async showSheet(req, res)
     {
         let collection = this.db.collection('sheets');
-        let sheetJSON = await collection.findOne({digest:req.params.hash});
+        let sheetJSON = await collection.findOne({nano:req.params.hash});
+        if(!sheetJSON)
+        {
+            res.render("noSheetFound");
+            return;
+        }
+
         let sheet = await KithainSheet.fromJSON(sheetJSON.sheet);
 
         let kith = null;
@@ -49,8 +55,9 @@ class SheetController extends Controller
             }
             arts.push(art);
         }
+        let title = sheet.name;
 
-        res.render('sheets/kithainsheet', {sheet, sheetStructure, kith, house, arts});
+        res.render('sheets/kithainsheet', {sheet, sheetStructure, kith, house, arts, title});
     }
 }
 

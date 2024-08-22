@@ -1,6 +1,7 @@
 import {SlashCommandBuilder} from 'discord.js';
 import MongoConnectionFactory from '../MongoConnectionFactory.js';
 import KithainSheet from '../Character Model/KithainSheet.js';
+import {nanoid} from 'nanoid';
 
 import userHash from "../userHashFunction.js";
 
@@ -22,7 +23,7 @@ export default {
 
             let hashHex = await userHash(interaction);
 
-            db.collection('sheets').updateOne({digest:hashHex}, {$set:{sheet:sheetJSON, guildId:interaction.guildId}}, {upsert:true});
+            db.collection('sheets').updateOne({digest:hashHex}, {$set:{sheet:sheetJSON, guildId:interaction.guildId, nanoid:nanoid()}}, {upsert:true});
             interaction.reply({content:'Your sheet has been updated.', ephemeral:true});
         }).catch((e)=>{
             interaction.reply({content:e.message, ephemeral:true});

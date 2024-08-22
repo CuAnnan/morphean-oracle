@@ -14,6 +14,7 @@ class MongoConnectionFactory
             await MongoConnectionFactory.MongoClient.connect();
             MongoConnectionFactory.Instance = MongoConnectionFactory.MongoClient.db(conf.db);
         }
+        return MongoConnectionFactory.Instance;
     }
 
     static getInstance()
