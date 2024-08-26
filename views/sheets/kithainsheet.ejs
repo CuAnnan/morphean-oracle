@@ -6,6 +6,20 @@
     }
 
 </style>
+<script>
+    window.addEventListener('load', function(){
+        document.querySelectorAll('.toggler').forEach(el=>{
+            el.addEventListener('click', ()=>{
+                let next = el.parentElement.parentElement.nextElementSibling;
+                let vis = next.style.display===''||next.style.display==='flex'
+                next.style.display = vis?'none':'flex';
+                el.classList.remove('bx-up-arrow-alt', 'bx-down-arrow-alt');
+                el.classList.add(vis?'bx-down-arrow-alt':'bx-up-arrow-alt');
+
+            });
+        });
+    });
+</script>
 
 <div class="container">
     <ul class="nav nav-tabs" id="sheetStructure" role="tablist">

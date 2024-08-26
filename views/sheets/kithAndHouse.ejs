@@ -1,36 +1,32 @@
-<div class="container">
     <div class="row">
         <h3 class="col text-center"><%- kith.name%></h3>
     </div>
     <div class="row">
-        <div class="col-2"><strong><%- kith.frailty.name %></strong></div>
+        <div class="col-3 col-lg-2"><strong><%- kith.frailty.name %></strong></div>
         <div class="col"><%- kith.frailty.mechanics %></div>
     </div>
     <div class="row">
-        <div class="col-2"><strong><%- kith.birthrights[0].name%></strong></div>
+        <div class="col-3 col-lg-2"><strong><%- kith.birthrights[0].name%></strong></div>
         <div class="col"><%- kith.birthrights[0].mechanics%></div>
     </div>
     <div class="row">
-        <div class="col-2"><strong><%- kith.birthrights[1].name%></strong></div>
+        <div class="col-3 col-lg-2"><strong><%- kith.birthrights[1].name%></strong></div>
         <div class="col"><%- kith.birthrights[1].mechanics%></div>
     </div>
-</div>
 <% if(house)
 {
 %>
-    <div class="container">
         <div class="row">
             <h3 class="col text-center">House <%- house.name%></h3>
         </div>
         <div class="row">
-            <div class="col-2"><strong>Boon</strong></div>
+            <div class="col-3 col-lg-2"><strong>Boon</strong></div>
             <div class="col"><%- house.boon %></div>
         </div>
         <div class="row">
-            <div class="col-2"><strong>Flaw</strong></div>
+            <div class="col-3 col-lg-2"><strong>Flaw</strong></div>
             <div class="col"><%- house.flaw %></div>
         </div>
-    </div>
 <%
 }
 %>

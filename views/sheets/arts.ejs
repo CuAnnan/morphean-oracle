@@ -4,13 +4,13 @@
     </div>
     <% for (let art of arts){%>
         <div class="row">
-            <h4 class="col text-center"><%- art.name %></h4>
+            <h4 class="col text-center"><%- art.name %> <i class="toggler bx bx-up-arrow-alt"></i></h4>
         </div>
+        <div class="row">
         <% for (let cantrip of art.cantrips){%>
-            <div class="row">
-                <div class="col-2"><strong><%- cantrip.name %></strong></div>
-                <div class="col"><%- cantrip.effect %></div>
-            </div>
+                <div class="col-3 col-lg-2"><strong><%- cantrip.name %></strong></div>
+                <div class="col-9 col-lg-10"><%- cantrip.effect %></div>
         <%}%>
+        </div>
     <%}%>
 </div>
