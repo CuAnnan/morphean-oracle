@@ -108,7 +108,7 @@ let traitBoxes = function(trait)
         <div class="row"><strong class="text-center">Backgrounds</strong></div>
         <% for(let [name, background] of Object.entries(sheet.structuredTraits.background)) {%>
             <div class="row">
-                <div class="col"><strong class="traitName" data-level="<%-background.level%>"><%- background.name %></strong></div>
+                <div class="col"><strong class="traitName" data-level="<%-background.level%>"><%- background.name + (background.specialty?(` - (${background.specialty})`):"")%></strong></div>
                 <div class="col"><% traitDots(background) %></div>
             </div>
         <%} %>
