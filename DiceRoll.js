@@ -57,6 +57,7 @@ class DiceRoll
         this.result = {
             traits:this.traits,
             diff:this.diff,
+            botch,
             successes,
             dice,
             result:successes?'Success':(botch?'Botch':'Failure')
@@ -66,7 +67,8 @@ class DiceRoll
 
     static fromJSON(json)
     {
-        return Object.assign(new this(),json);
+        return new this(json);
+        //return Object.assign(new this(),json);
     }
 }
 
