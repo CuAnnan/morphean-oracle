@@ -113,6 +113,6 @@ export default {
         {
             content += `\n**Nightmare Gained:** ${$roll.nightmareGained}`;
         }
-        interaction.reply({content, ephemeral:true});
+        interaction.reply({content});
     },
 };
