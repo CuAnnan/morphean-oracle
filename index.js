@@ -27,56 +27,17 @@ import indexRoute from './routes/index.js';
 
 import * as http from 'http';
 
+import DiscordClientContainer from "./DiscordClientContainer.js";
+
 const port = 3030;
 
 
 MongoConnectionFactory.init(conf).then(async ()=>{
 
-    const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+     DiscordClientContainer.initialise(conf).then(container=>{
+         console.log("Client container initialised");
+     });
 
-    client.commands = new Collection();
-
-    for (const file of commandFiles) {
-        const module = await import(`./bot-commands/${file}`);
-        const command = module.default;
-
-        // Set a new item in the Collection with the key as the command name and the value as the exported module
-        if ('data' in command && 'execute' in command) {
-            client.commands.set(command.data.name, command);
-        } else {
-            console.error(`Discord-Bot: The command at ${file} is missing a required "data" or "execute" property.`);
-        }
-    }
-
-    client.on(Events.InteractionCreate, async interaction => {
-        if (!interaction.isChatInputCommand()) return;
-
-        const command = interaction.client.commands.get(interaction.commandName);
-
-        if (!command) {
-            console.warn(`Discord-Bot: No command matching ${interaction.commandName} was found. May be from a different bot.`);
-            return;
-        }
-
-        try {
-            await command.execute(interaction);
-        } catch (error) {
-            console.error('Discord-Bot: '+ error.message);
-            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-        }
-    });
-
-
-    client.once(Events.ClientReady, readyClient => {
-        console.log(`Ready! Logged in as ${readyClient.user.tag}, connecting to`);
-    });
-
-    console.log("")
-    // Log in to Discord with your client's token
-    client.login(conf.token)
-        .then(()=>{
-            console.log("Login resolved");
-        });
 
 
     console.log("Building Express app")
@@ -84,16 +45,16 @@ MongoConnectionFactory.init(conf).then(async ()=>{
     app.use(logger('dev'));
     app.use(cookieParser());
     app.use(express.static(path.join(__dirname, 'public')));
+    app.use('/model', express.static(path.join(__dirname, 'Character Model')));
 
     // view engine setup
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'ejs');
 
+    app.use(express.json());
+
     app.use('/', indexRoute);
     app.use('/sheets/', sheetsRoute);
-
-
-
 
     app.use(function(req, res, next) {
         next(createError(404));

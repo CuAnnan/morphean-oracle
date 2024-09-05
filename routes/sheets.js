@@ -11,5 +11,9 @@ router.get('/view/:hash', (req, res, next)=>{
     controller.showSheet(req, res).catch(next);
 });
 
+router.post('/roll/:hash', (req, res, next)=>{
+    controller.rollPool(req, res).catch(next);
+});
+
 
 export default router;

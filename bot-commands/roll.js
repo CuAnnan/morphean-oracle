@@ -76,7 +76,7 @@ export default {
             {
                 poolParts.push(part.trim());
             }
-            
+
             try
             {
                 let db = MongoConnectionFactory.getInstance();
@@ -105,7 +105,7 @@ export default {
         }
         let roll = new DiceRoll(poolData, diff, specialty, wyrd, willpower).resolve();
         let dice = roll.dice.map((x)=>x === 1?`__*${x}*__`:(x >= roll.diff?`**${x}**`:x));
-        
+
         interaction.reply({content:`**Pool:** ${roll.traits.join(' + ')}\n**Difficulty:** ${roll.diff}\n**Result:** ${roll.result}\n**Dice:** ${dice.join(" ")}\n**Successes:** ${roll.successes}`});
     },
 };

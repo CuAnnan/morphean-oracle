@@ -13,7 +13,7 @@ const commandFiles = fs.readdirSync('./bot-commands').filter(file => file.endsWi
 
 // Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
 for (const file of commandFiles) {
-    const module = await(import(`./bot-commands/${file}`));
+    const module = await(import(`../bot-commands/${file}`));
     const command = module.default;
     commands.push(command.data.toJSON());
 }

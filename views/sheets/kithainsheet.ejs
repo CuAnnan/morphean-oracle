@@ -1,28 +1,20 @@
 <%- include('../inc/header') %>
 <style>
-    .traitName
+    .traitName, .rollPart
     {
         cursor:pointer;
     }
 
 </style>
-<script>
-    window.addEventListener('load', function(){
-        document.querySelectorAll('.toggler').forEach(el=>{
-            el.addEventListener('click', ()=>{
-                let next = el.parentElement.parentElement.nextElementSibling;
-                let vis = next.style.display===''||next.style.display==='flex'
-                next.style.display = vis?'none':'flex';
-                el.classList.remove('bx-up-arrow-alt', 'bx-down-arrow-alt');
-                el.classList.add(vis?'bx-down-arrow-alt':'bx-up-arrow-alt');
-
-            });
-        });
-    });
+<script type="text/javascript">
+    var sheetJSON = JSON.parse('<%-JSON.stringify(sheet)%>');
+    var hash = '<%-hash%>';
 </script>
+<script type="module" src="/js/sheetLoader.js"></script>
+
 
 <div class="container">
-    <ul class="nav nav-tabs" id="sheetStructure" role="tablist">
+    <ul class="nav nav-tabs ml-auto" id="sheetStructure" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="sheet-tab" data-bs-toggle="tab" data-bs-target="#sheet" type="button" role="tab" aria-controls="sheet" aria-selected="true">Sheet</button>
         </li>

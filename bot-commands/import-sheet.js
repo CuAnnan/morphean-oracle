@@ -1,6 +1,6 @@
 import {SlashCommandBuilder} from 'discord.js';
 import MongoConnectionFactory from '../MongoConnectionFactory.js';
-import KithainSheet from '../Character Model/KithainSheet.js';
+import KithainSheet from '../Character Model/GoogleKithainSheet.js';
 import {nanoid} from 'nanoid';
 
 import userHash from "../userHashFunction.js";

@@ -1,6 +1,8 @@
 'use strict';
 import Controller from './Controller.js';
 import KithainSheet from '../Character Model/KithainSheet.js';
+import DiceRoll from "../DiceRoll.js";
+import DiscordClientContainer from "../DiscordClientContainer.js";
 
 import userHash from "../userHashFunction.js";
 
@@ -57,7 +59,51 @@ class SheetController extends Controller
         }
         let title = sheet.name;
 
-        res.render('sheets/kithainsheet', {sheet, sheetStructure, kith, house, arts, title});
+        res.render('sheets/kithainsheet', {hash:req.params.hash, sheet, sheetStructure, kith, house, arts, title});
+    }
+
+    async rollPool(req, res)
+    {
+        let collection = this.db.collection('sheets');
+        let sheetJSON = await collection.findOne({nanoid:req.params.hash});
+
+        if(!sheetJSON)
+        {
+            res.json({success:false, error:"no sheet found"});
+            return;
+        }
+
+        let {channelId} = sheetJSON;
+
+        let pool = req.body;
+        let diceRoll = new DiceRoll(
+            pool.pool,
+            parseInt(pool.diff),
+            pool.spec,
+            pool.wyrd,
+            pool.will
+        );
+        let roll = diceRoll.resolve();
+
+
+        if(channelId)
+        {
+            let client = DiscordClientContainer.client;
+            let dice = roll.dice
+                .sort((x, y)=> x - y)
+                .map((x)=>x === 1?`__*${x}*__`:(x >= roll.diff?`**${x}**`:x)) // italicise 1s, bold successes
+                ;
+
+            client.channels.fetch(channelId).then(
+                channel=>{
+                    channel.send(
+                        `**Pool:** ${roll.traits.join(' + ')}\n**Difficulty:** ${roll.diff}\n**Result:** ${roll.result}\n**Dice:** ${dice.join(" ")}\n**Successes:** ${roll.successes}`
+                    );
+                }
+            );
+        }
+
+        res.json({success:true, result:roll});
     }
 }
 
