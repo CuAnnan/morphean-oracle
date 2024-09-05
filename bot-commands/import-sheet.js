@@ -26,6 +26,7 @@ export default {
             db.collection('sheets').updateOne({digest:hashHex}, {$set:{sheet:sheetJSON, guildId:interaction.guildId, nanoid:nanoid()}}, {upsert:true});
             interaction.reply({content:'Your sheet has been updated.', ephemeral:true});
         }).catch((e)=>{
+            console.log(e);
             interaction.reply({content:e.message, ephemeral:true});
         });
     },

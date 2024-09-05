@@ -15,13 +15,19 @@ class Sheet
 
     addTrait(trait)
     {
-        this.traits[trait.name.toLowerCase()] = trait;
         let cName = trait.constructor.name.toLowerCase();
+        let traitKey = trait.name.toLowerCase();
+        if(cName === 'background')
+        {
+            traitKey += (trait.specialty?('-'+trait.specialty):'');
+        }
+        this.traits[traitKey] = trait;
+
         if(!this.structuredTraits[cName])
         {
             this.structuredTraits[cName] = {};
         }
-        this.structuredTraits[cName][trait.name] = trait;
+        this.structuredTraits[cName][traitKey] = trait;
     }
 
     toJSON()
