@@ -17,19 +17,36 @@ window.addEventListener('load', function(){
     let roll = null;
     let sheet;
 
+    fetch(`/sheets/fetchJSON/${nanoid}`).then(
+        response=>{
+            response.json().then(sheetJSON=>{
+                Sheet.fromJSON(sheetJSON).then((sheetObject)=>{
+                    sheet = sheetObject;
+                    document.querySelectorAll('.traitName').forEach(el=>{
+                        el.addEventListener('click', ()=>{
+                            rollParts[el.innerHTML] = true;
+                            reloadRollParts();
+                        });
+                    });
+                }).catch((e)=>{
+                    console.log(e);
+                });
+            });
+        }
+    );
+
 
     document.getElementById('rollButton').addEventListener('click', ()=>{
         if(roll)
         {
-            let json = {
-                pool:roll,
-                diff:parseInt($diff.value),
-                spec:$spec.checked,
-                wyrd:$wyrd.checked,
-                will:$will.checked
-            };
+            let json = Object.assign({},roll,{
+                    diff:parseInt($diff.value),
+                    spec:$spec.checked,
+                    wyrd:$wyrd.checked,
+                    will:$will.checked
+            });
             fetch(
-                `/sheets/roll/${hash}`,
+                `/sheets/roll/${nanoid}`,
                 {
                     method:'POST',
                     headers:{"Content-Type": "application/json"},
@@ -98,19 +115,6 @@ window.addEventListener('load', function(){
 
         }
     }
-
-    Sheet.fromJSON(sheetJSON).then((sheetObject)=>{
-        sheet = sheetObject;
-        document.querySelectorAll('.traitName').forEach(el=>{
-            el.addEventListener('click', ()=>{
-                rollParts[el.innerHTML] = true;
-                reloadRollParts();
-            });
-        });
-    }).catch((e)=>{
-        console.log(e);
-    });
-
 
     document.querySelectorAll('.toggler').forEach(el=>{
         el.addEventListener('click', ()=>{

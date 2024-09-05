@@ -1,13 +1,13 @@
 class DiceRoll
 {
-    constructor({traits, dicePool, valid}, diff = 6, spec = false, wyrd = false, willpower = false)
+    constructor({traits, dicePool, valid, diff, specialty, wyrd, willpower})
     {
         this.traits = traits;
         this.dicePool = dicePool;
         this.valid = valid;
         this.diff = diff;
         this.result = null;
-        this.spec = spec;
+        this.specialty = specialty;
         this.wyrd = wyrd;
         this.willpower = willpower;
     }
@@ -23,7 +23,7 @@ class DiceRoll
         let hasAnySuccesses = false;
         let successes = this.willpower?1:0;
         let diceRemaining = this.dicePool;
-        let handle10s = (this.spec || this.wyrd);
+        let handle10s = (this.specialty || this.wyrd);
         let hasAny1s = false;
         while(diceRemaining > 0)
         {
@@ -40,7 +40,7 @@ class DiceRoll
                 successes++;
                 if(die === 10 && handle10s)
                 {
-                    if(this.spec)
+                    if(this.specialty)
                     {
                         successes++;
                     }
@@ -55,6 +55,7 @@ class DiceRoll
         let botch = !hasAnySuccesses && hasAny1s;
         successes = Math.max(successes,0);
         this.result = {
+            specialty:this.specialty,
             traits:this.traits,
             diff:this.diff,
             botch,

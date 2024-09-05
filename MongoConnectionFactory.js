@@ -3,9 +3,11 @@ import {MongoClient} from 'mongodb';
 
 class MongoConnectionFactory
 {
+    static #instantiated;
+
     static async init(conf)
     {
-        if(typeof MongoConnectionFactory.Instance == "undefined")
+        if(!this.#instantiated)
         {
             MongoConnectionFactory.Instance = null;
             console.log("Running initial connection");
@@ -13,6 +15,7 @@ class MongoConnectionFactory
             MongoConnectionFactory.MongoClient = new MongoClient(mongoUrl);
             await MongoConnectionFactory.MongoClient.connect();
             MongoConnectionFactory.Instance = MongoConnectionFactory.MongoClient.db(conf.db);
+            this.#instantiated = true;
         }
         return MongoConnectionFactory.Instance;
     }

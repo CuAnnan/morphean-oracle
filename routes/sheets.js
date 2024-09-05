@@ -15,5 +15,9 @@ router.post('/roll/:hash', (req, res, next)=>{
     controller.rollPool(req, res).catch(next);
 });
 
+router.get('/fetchJSON/:hash', (req, res, next)=>{
+    controller.fetchSheetJSON(req, res).catch(next);
+});
+
 
 export default router;

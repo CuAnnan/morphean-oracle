@@ -3,7 +3,7 @@
 import {SlashCommandBuilder} from 'discord.js';
 import MongoConnectionFactory from '../MongoConnectionFactory.js';
 import KithainSheet from '../Character Model/KithainSheet.js';
-import DiceRoll from '../DiceRoll.js';
+import DiceRoll from '../Character Model/DiceRoll.js';
 
 import userHash from "../userHashFunction.js";
 
@@ -103,7 +103,9 @@ export default {
         {
             poolData = {traits: [parts], dicePool:parseInt(parts)};
         }
-        let roll = new DiceRoll(poolData, diff, specialty, wyrd, willpower).resolve();
+
+        let pool = Object.assign({}, poolData, {diff, specialty, wyrd, willpower})
+        let roll = new DiceRoll(pool).resolve();
         let dice = roll.dice.map((x)=>x === 1?`__*${x}*__`:(x >= roll.diff?`**${x}**`:x));
 
         interaction.reply({content:`**Pool:** ${roll.traits.join(' + ')}\n**Difficulty:** ${roll.diff}\n**Result:** ${roll.result}\n**Dice:** ${dice.join(" ")}\n**Successes:** ${roll.successes}`});

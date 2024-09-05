@@ -88,6 +88,13 @@ class KithainSheet extends Sheet
         this.secondOathSworn = json.secondOathSworn;
     }
 
+    getCantripPool(traits)
+    {
+        let pool = this.getPool(traits);
+        pool.nightmare = this.nightmare;
+        return pool;
+    }
+
     finalize()
     {
         switch(this.kith)

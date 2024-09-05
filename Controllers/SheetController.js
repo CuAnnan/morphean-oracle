@@ -1,8 +1,9 @@
 'use strict';
 import Controller from './Controller.js';
 import KithainSheet from '../Character Model/KithainSheet.js';
-import DiceRoll from "../DiceRoll.js";
+import DiceRoll from "../Character Model/DiceRoll.js";
 import DiscordClientContainer from "../DiscordClientContainer.js";
+import {nanoid} from 'nanoid';
 
 import userHash from "../userHashFunction.js";
 
@@ -23,17 +24,28 @@ const sheetStructure = {
 class SheetController extends Controller
 {
 
-    async showSheet(req, res)
+    async getSheetByNanoID(nanoid)
     {
         let collection = this.db.collection('sheets');
-        let sheetJSON = await collection.findOne({nanoid:req.params.hash});
+        let sheetJSON = await collection.findOne({nanoid});
         if(!sheetJSON)
+        {
+            throw new Error('No sheet found');
+        }
+        return KithainSheet.fromJSON(sheetJSON.sheet);
+    }
+
+    async showSheet(req, res)
+    {
+        let sheet = null;
+        try {
+            sheet = await this.getSheetByNanoID(req.params.hash);
+        }
+        catch(e)
         {
             res.render("noSheetFound");
             return;
         }
-
-        let sheet = await KithainSheet.fromJSON(sheetJSON.sheet);
 
         let kith = null;
         if(sheet.kith)
@@ -62,6 +74,20 @@ class SheetController extends Controller
         res.render('sheets/kithainsheet', {hash:req.params.hash, sheet, sheetStructure, kith, house, arts, title});
     }
 
+    async fetchSheetJSON(req, res)
+    {
+        let sheet = null;
+        try {
+            sheet = await this.getSheetByNanoID(req.params.hash);
+            res.json(sheet.toJSON());
+        }
+        catch(e)
+        {
+            res.json({error:e.message});
+        }
+
+    }
+
     async rollPool(req, res)
     {
         let collection = this.db.collection('sheets');
@@ -74,17 +100,10 @@ class SheetController extends Controller
         }
 
         let {channelId} = sheetJSON;
-
-        let pool = req.body;
-        let diceRoll = new DiceRoll(
-            pool.pool,
-            parseInt(pool.diff),
-            pool.spec,
-            pool.wyrd,
-            pool.will
-        );
+        let poolData = req.body;
+        let diceRoll = new DiceRoll(poolData);
         let roll = diceRoll.resolve();
-
+        let nano=null;
 
         if(channelId)
         {
@@ -93,17 +112,18 @@ class SheetController extends Controller
                 .sort((x, y)=> x - y)
                 .map((x)=>x === 1?`__*${x}*__`:(x >= roll.diff?`**${x}**`:x)) // italicise 1s, bold successes
                 ;
+            nano = nanoid();
 
             client.channels.fetch(channelId).then(
                 channel=>{
                     channel.send(
-                        `**Pool:** ${roll.traits.join(' + ')}\n**Difficulty:** ${roll.diff}\n**Result:** ${roll.result}\n**Dice:** ${dice.join(" ")}\n**Successes:** ${roll.successes}`
+                        `**Pool:** ${roll.traits.join(' + ')}\n**Difficulty:** ${roll.diff}\n**Result:** ${roll.result}\n**Dice:** ${dice.join(" ")}\n**Successes:** ${roll.successes}\nNID: ${nano}`
                     );
                 }
             );
         }
 
-        res.json({success:true, result:roll});
+        res.json({success:true, result:roll, nano});
     }
 }
 
