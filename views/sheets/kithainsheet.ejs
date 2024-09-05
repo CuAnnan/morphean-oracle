@@ -7,9 +7,9 @@
 
 </style>
 <script type="text/javascript">
-    var sheetJSON = JSON.parse('<%-JSON.stringify(sheet)%>');
-    var hash = '<%-hash%>';
+    var sheetJSON = JSON.parse('<%-JSON.stringify(sheet).replace("'", "\'") %>');
 </script>
+
 <script type="module" src="/js/sheetLoader.js"></script>
 
 
