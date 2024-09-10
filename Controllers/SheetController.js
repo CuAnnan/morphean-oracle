@@ -38,7 +38,7 @@ class SheetController extends Controller
 
     async getSheetByNanoID(nanoid)
     {
-        let sheet = await this.getSheetDocumentByNanoID(nanoid.sheet);
+        let sheet = await this.getSheetDocumentByNanoID(nanoid);
         return KithainSheet.fromJSON(sheet.sheet);
     }
 
@@ -55,6 +55,7 @@ class SheetController extends Controller
         }
         catch(e)
         {
+            console.log(e);
             res.render("noSheetFound");
             return;
         }
