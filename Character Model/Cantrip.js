@@ -1,28 +1,41 @@
-import DiceRoll from "./DiceRoll.js";
+import {DiceRoll, NightmareDie, Die} from "./DiceRoll.js";
 
 class Cantrip extends DiceRoll
 {
+    /**
+     * KithainSheet
+     */
+    sheet;
+
     constructor({traits, dicePool, valid, diff, specialty, wyrd, willpower, nightmare})
     {
         super({traits, dicePool, valid, diff, specialty, wyrd, willpower});
         this.diff = diff?diff:8;
-        this.nightmare = nightmare?nightmare:0;
+        this.nightmare = nightmare;
+    }
+
+    buildDicePool()
+    {
+        this.dice = [];
+        for(let i = 0; i < this.nightmare; i++)
+        {
+            this.dice.push(new NightmareDie(this));
+        }
+        for(let i = this.nightmare; i < this.dicePool; i++)
+        {
+            this.dice.push(new Die(this));
+        }
     }
 
     resolve()
     {
         let result = super.resolve();
-        let nightmareDice = Math.min(this.nightmare, this.dicePool);
         let nightmareGained = 0;
-        for(let i = 0; i < nightmareDice; i++)
+        for(let die of this.dice)
         {
-            if(result.dice[i] === 10)
+            if(die.result.nightmare)
             {
-                nightmareGained ++;
-                if(this.wyrd)
-                {
-                    nightmareDice++;
-                }
+                nightmareGained += die.result.nightmare;
             }
         }
         result.nightmareGained = nightmareGained;

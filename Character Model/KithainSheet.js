@@ -6,6 +6,23 @@ const constructors = {Trait, Attribute, Talent, Skill, Knowledge, Art, Realm, Ba
 
 class KithainSheet extends Sheet
 {
+    kith;
+    house;
+    court;
+    legacies;
+    motley;
+    seeming;
+    secondOathSworn;
+    glamour;
+    glamourSpent;
+    willpower;
+    willpowerSpent;
+    banality;
+    temporaryBanality;
+    nightmare;
+    imbalance;
+
+
     constructor(url)
     {
         super(url);
@@ -16,15 +33,22 @@ class KithainSheet extends Sheet
         this.motley = null;
         this.seeming = null;
         this.secondOathSworn = false;
-        this.glamour = 0;
-        this.willpower = 0;
-        this.nightmare = 0;
-        this.banality = 0;
+        this.glamour = null;
+        this.glamourSpent = 0;
+        this.willpower = null;
+        this.willpowerSpent = 0;
+        this.banality = null;
+        this.temporaryBanality = 0;
+        this.nightmare = null;
+        this.imbalance = 0;
     }
 
     toJSON()
     {
-        let json = {url:this.url, kith:this.kith, house:this.house, name:this.name, player:this.player, chronicle:this.chronicle, court:this.court, legacies:this.legacies, seeming:this.seeming, motley:this.motley, secondOathSworn:this.secondOathSworn, traits:[]};
+        let json = {
+            url:this.url, kith:this.kith, house:this.house, name:this.name, player:this.player, chronicle:this.chronicle, court:this.court, legacies:this.legacies, seeming:this.seeming, motley:this.motley, secondOathSworn:this.secondOathSworn, traits:[],
+            glamourSpent:this.glamourSpent, willpowerSpent:this.willpowerSpent, temporaryBanality:this.temporaryBanality, imbalance:this.imbalance,
+        };
         for(let [key, trait] of Object.entries(this.traits))
         {
             try
@@ -40,6 +64,16 @@ class KithainSheet extends Sheet
         return json;
     }
 
+    increaseNightmare(amount)
+    {
+        this.nightmare += amount;
+        if(this.nightmare >= 10)
+        {
+            this.imbalance++;
+            this.nightmare = 0;
+        }
+        return this.nightmare;
+    }
 
     setKith(kith)
     {
@@ -86,6 +120,65 @@ class KithainSheet extends Sheet
         this.seeming = json.seeming;
         this.motley = json.motley;
         this.secondOathSworn = json.secondOathSworn;
+        this.temporaryBanality = json.temporaryBanality?json.temporaryBanality:0;
+        this.glamourSpent = json.glamourSpent?json.glamourSpent:0;
+        this.willpowerSpent = json.willpowerSpent?json.willpowerSpent:0;
+        this.imbalance = json.imbalance?json.imbalance:0;
+    }
+
+    spendGlamour(amount)
+    {
+        if(this.glamourSpent + amount < this.glamour.level)
+        {
+            throw new Error('You cannot afford that glamour expenditure');
+        }
+        this.glamourSpent += amount;
+    }
+
+    gainGlamour(amount = 1)
+    {
+        this.glamourSpent -= amount
+        if(this.glamourSpent < 0)
+        {
+            this.glamourSpent = 0;
+        }
+    }
+
+    spendWillpower(amount)
+    {
+        if(this.willpowerSpent + amount < this.willpower.level)
+        {
+            throw new Error('You cannot afford that willpower expenditure');
+        }
+        this.willpowerSpent += amount;
+    }
+
+    gainWillpower(amount= 1)
+    {
+        this.willpowerSpent -= amount;
+        if(this.willpowerSpent < 0)
+        {
+            this.willpowerSpent = 0;
+        }
+    }
+
+    loseTemporaryBanality(amount = 1)
+    {
+        this.temporaryBanality -= amount;
+        if(this.temporaryBanality < 0)
+        {
+            this.temporaryBanality = 0;
+        }
+    }
+
+    gainTemporaryBanality(amount = 1)
+    {
+        this.temporaryBanality += amount;
+        if(this.temporaryBanality >= 10)
+        {
+            this.temporaryBanality = 0;
+            this.banality.setFreeLevels(1);
+        }
     }
 
     getCantripPool(traits)

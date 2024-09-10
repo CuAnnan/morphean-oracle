@@ -59,25 +59,27 @@ window.addEventListener('load', function(){
                         if(response.success)
                         {
                             let {result} = response;
+                            let html = `<span title="${response.nano}">`
                             if(result.successes > 0)
                             {
-                                $result.innerHTML = `${result.successes} successes.`;
+                                html += `${result.successes} successes.`;
                             }
                             else if(result.botch)
                             {
-                                $result.innerHTML = 'Botch!';
+                                html += 'Botch!';
                             }
                             else
                             {
-                                $result.innerHTML = 'Failure.';
+                                html += 'Failure.';
                             }
 
-                            let dice = result.dice
+                            let dice = result.faces
                                 .sort((x, y)=> x - y) // sort the dice
                                 .map((x)=>x === 1?`<i>${x}</i>`:(x >= result.diff?`<strong>${x}</strong>`:x)) // italicise 1s, bold successes
                                 .join(', '); // turn it to a string
 
-                            $result.innerHTML += ` [${dice}]`; // add it to the result node
+                            html += ` [${dice}]</span>`; // add it to the result node
+                            $result.innerHTML = html;
                         }
                     })
             });

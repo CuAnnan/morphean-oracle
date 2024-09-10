@@ -12,11 +12,24 @@ router.get('/view/:hash', (req, res, next)=>{
 });
 
 router.post('/roll/:hash', (req, res, next)=>{
-    controller.rollPool(req, res).catch(next);
+    controller.handleRollFetchRequest(req, res).catch((err)=>{
+        res.json(err);
+        console.log(err);
+    });
 });
 
 router.get('/fetchJSON/:hash', (req, res, next)=>{
-    controller.fetchSheetJSON(req, res).catch(next);
+    controller.fetchSheetJSON(req, res).catch((err)=>{
+        console.log(err);
+        res.json({err});
+    });
+});
+
+router.get('/cantrip/:hash', (req, res, next)=>{
+    contrller.handleCantripFetchRequest(req, res).catch(err=>{
+        console.log(err);
+        res.json({err});
+    })
 });
 
 

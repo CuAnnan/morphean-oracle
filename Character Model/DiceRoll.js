@@ -1,15 +1,112 @@
+class Die
+{
+    diff;
+    specialty;
+    wyrd;
+    #result;
+
+    constructor({diff, specialty, wyrd})
+    {
+        this.diff = diff;
+        this.specialty = !!specialty;
+        this.wyrd = !!wyrd;
+        this.#result = null;
+    }
+
+    get result()
+    {
+        if(this.#result)
+        {
+            return this.#result;
+        }
+        this.roll();
+        return this.#result;
+    }
+
+    /**
+     * @returns {{successes: number, numberOf10s: number, faces: number[], numberOf1s: number}}
+     */
+    roll()
+    {
+        let dieFace = Math.floor(Math.random() * 10) + 1;
+        let result = {successes:0,faces:[dieFace], numberOf1s:0, numberOf10s:0};
+
+        if(dieFace >= this.diff)
+        {
+            result.successes++;
+            if(dieFace === 10)
+            {
+                result.numberOf10s++;
+                if(this.specialty)
+                {
+                    result.successes++;
+                }
+                if(this.wyrd)
+                {
+                    let secondRoll = new Die(this.toJSON()).result;
+                    result.successes += secondRoll.successes;
+                    result.numberOf10s += result.numberOf10s;
+                    result.numberOf1s += result.numberOf1s;
+                    result.faces = result.faces.concat(secondRoll.faces);
+                }
+            }
+        }
+        else if(dieFace === 1)
+        {
+            result.numberOf1s ++;
+            result.successes --;
+        }
+        this.#result = result;
+        return result;
+    }
+
+    toJSON()
+    {
+        return {diff:this.diff, specialty:this.specialty, wyrd:this.wyrd};
+    }
+}
+
+class NightmareDie extends Die
+{
+    #result;
+
+    roll()
+    {
+        this.#result = super.roll();
+        this.#result.nightmare = 0;
+        for(let face of this.#result.faces)
+        {
+            if(face === 10)
+            {
+                this.#result.nightmare++;
+            }
+        }
+        return this.#result;
+    }
+}
+
+
 class DiceRoll
 {
     constructor({traits, dicePool, valid, diff, specialty, wyrd, willpower})
     {
         this.traits = traits;
         this.dicePool = dicePool;
-        this.valid = valid;
-        this.diff = diff;
+        this.valid = !!valid;
+        this.diff = diff?diff:6;
         this.result = null;
-        this.specialty = specialty;
-        this.wyrd = wyrd;
-        this.willpower = willpower;
+        this.specialty = !!specialty;
+        this.wyrd = !!wyrd;
+        this.willpower = !!willpower;
+    }
+
+    buildDicePool()
+    {
+        this.dice = [];
+        for(let i = 0; i < this.dicePool; i++)
+        {
+            this.dice.push(new Die(this));
+        }
     }
 
     resolve()
@@ -22,45 +119,31 @@ class DiceRoll
         let dice = [];
         let hasAnySuccesses = false;
         let successes = this.willpower?1:0;
-        let diceRemaining = this.dicePool;
-        let handle10s = (this.specialty || this.wyrd);
         let hasAny1s = false;
-        while(diceRemaining > 0)
+        let faces = [];
+
+        this.buildDicePool();
+
+        for(let {result} of this.dice)
         {
-            let die = Math.floor(Math.random() * 10) + 1;
-            dice.push(die);
-            if(die === 1)
-            {
-                hasAny1s = true;
-                successes --;
-            }
-            else if(die >= this.diff)
-            {
-                hasAnySuccesses = true;
-                successes++;
-                if(die === 10 && handle10s)
-                {
-                    if(this.specialty)
-                    {
-                        successes++;
-                    }
-                    if(this.wyrd)
-                    {
-                        diceRemaining++;
-                    }
-                }
-            }
-            diceRemaining --;
+            dice.push(result);
+            successes += result.successes;
+            faces = faces.concat(result.faces);
+            hasAny1s = hasAny1s || result.numberOf1s > 0;
+            hasAnySuccesses = hasAnySuccesses || result.successes > 0;
         }
+
         let botch = !hasAnySuccesses && hasAny1s;
         successes = Math.max(successes,0);
         this.result = {
+            valid:this.valid,
             specialty:this.specialty,
             traits:this.traits,
             diff:this.diff,
             botch,
             successes,
             dice,
+            faces,
             result:successes?'Success':(botch?'Botch':'Failure')
         };
         return this.result;
@@ -73,4 +156,5 @@ class DiceRoll
     }
 }
 
+export {DiceRoll, Die, NightmareDie};
 export default DiceRoll;

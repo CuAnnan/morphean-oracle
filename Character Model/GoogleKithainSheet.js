@@ -121,9 +121,9 @@ class GoogleKithainSheet extends KithainSheet
         }
         sheet.addTrait(willpower);
 
-        let nightmare = new Trait('Nightmare', worksheet['J46']?worksheet['J46'].v:0);
+        let nightmare = new Trait('Nightmare', worksheet['J45']?worksheet['J45'].v:0);
         sheet.addTrait(nightmare);
-        let banality = new Trait('Banality', worksheet['J47']?worksheet['J47'].v:3);
+        let banality = new Trait('Banality', worksheet['J46']?worksheet['J46'].v:3);
         sheet.addTrait(banality);
 
         sheet.finalize();

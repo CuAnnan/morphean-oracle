@@ -4,6 +4,8 @@ import KithainSheet from '../Character Model/KithainSheet.js';
 import DiceRoll from "../Character Model/DiceRoll.js";
 import DiscordClientContainer from "../DiscordClientContainer.js";
 import {nanoid} from 'nanoid';
+import Cantrip from '../Character Model/Cantrip.js';
+import Unleashing from '../Character Model/Unleashing.js';
 
 import userHash from "../userHashFunction.js";
 
@@ -23,8 +25,7 @@ const sheetStructure = {
 
 class SheetController extends Controller
 {
-
-    async getSheetByNanoID(nanoid)
+    async getSheetDocumentByNanoID(nanoid)
     {
         let collection = this.db.collection('sheets');
         let sheetJSON = await collection.findOne({nanoid});
@@ -32,7 +33,18 @@ class SheetController extends Controller
         {
             throw new Error('No sheet found');
         }
-        return KithainSheet.fromJSON(sheetJSON.sheet);
+        return sheetJSON;
+    }
+
+    async getSheetByNanoID(nanoid)
+    {
+        let sheet = await this.getSheetDocumentByNanoID(nanoid.sheet);
+        return KithainSheet.fromJSON(sheet.sheet);
+    }
+
+    async getChannelIdFromRequest(req)
+    {
+        return (await this.getSheetDocumentByNanoID(req.params.hash)).channelId;
     }
 
     async showSheet(req, res)
@@ -85,21 +97,36 @@ class SheetController extends Controller
         {
             res.json({error:e.message});
         }
-
     }
 
-    async rollPool(req, res)
+    async handleCantripFetchRequest(req, res)
     {
-        let collection = this.db.collection('sheets');
-        let sheetJSON = await collection.findOne({nanoid:req.params.hash});
+        this.getSheetDocumentByNanoID(req.params.hash).then((document)=>{
+            let {channelId} = {document};
+            KithainSheet.fromJSON(document.sheet).then(sheet=>{
+                //
+                let traits = sheet.getCantripPool([req.body.art, req.body.realm]);
+                let poolData = Object.assign({}, traits, {
+                    diff:req.body.diff?req.body.diff:8,
+                    specialty:!!req.body.specialty,
+                    wyrd:!!req.body.wyrd,
+                    willpower:!!req.body.willpower
+                });
+                let cantrip = new Cantrip(poolData).resolve();
+                if(cantrip.nightmareGained)
+                {
+                    sheet.increaseNightmare(cantrip.nightmareGained);
+                    this.db.collection('sheets').updateOne({_id:document._id}, {'sheet.nightmare':sheet.nightmare});
+                }
+                res.json(cantrip);
+            });
+        });
+    }
 
-        if(!sheetJSON)
-        {
-            res.json({success:false, error:"no sheet found"});
-            return;
-        }
+    async handleRollFetchRequest(req, res)
+    {
+        let channelId = await this.getChannelIdFromRequest(req);
 
-        let {channelId} = sheetJSON;
         let poolData = req.body;
         let diceRoll = new DiceRoll(poolData);
         let roll = diceRoll.resolve();
@@ -108,7 +135,7 @@ class SheetController extends Controller
         if(channelId)
         {
             let client = DiscordClientContainer.client;
-            let dice = roll.dice
+            let dice = roll.faces
                 .sort((x, y)=> x - y)
                 .map((x)=>x === 1?`__*${x}*__`:(x >= roll.diff?`**${x}**`:x)) // italicise 1s, bold successes
                 ;
