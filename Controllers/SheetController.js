@@ -36,6 +36,31 @@ class SheetController extends Controller
         return sheetJSON;
     }
 
+    async getSheetDocumentByDigest(digest)
+    {
+        let collection = this.db.collection('sheets');
+        let sheetJSON = await collection.findOne({digest});
+        if(!sheetJSON)
+        {
+            throw new Error('No sheet found');
+        }
+        return sheetJSON;
+    }
+
+    async getSheetByDigest(digest)
+    {
+        let cachedSheet = this.cache.get(digest);
+        if(!cachedSheet)
+        {
+            let document = await this.getSheetDocumentByDigest(digest);
+            let sheet= await KithainSheet.fromJSON(document.sheet);
+            this.cache.put(digest, sheet);
+            this.cache.put(document.nanoid, sheet);
+            cachedSheet = sheet;
+        }
+        return cachedSheet;
+    }
+
     async getSheetByNanoID(nanoid)
     {
         let cachedSheet = this.cache.get(nanoid);
@@ -43,10 +68,22 @@ class SheetController extends Controller
         {
             let document = await this.getSheetDocumentByNanoID(nanoid);
             let sheet= await KithainSheet.fromJSON(document.sheet);
+            this.cache.put(document.digest, sheet);
             this.cache.put(nanoid, sheet);
             cachedSheet = sheet;
         }
         return cachedSheet;
+    }
+
+    async saveSheetByDigest(digest)
+    {
+        let cachedSheet = this.cache.get(digest);
+        if(!cachedSheet)
+        {
+            throw new Error("Trying to update a sheet that is not in the cache");
+        }
+        let sheet = cachedSheet.toJSON();
+        this.db.collection('sheets').updateOne({digest:digest}, {$set:sheet}, {upsert:true});
     }
 
     async getChannelIdFromRequest(req)

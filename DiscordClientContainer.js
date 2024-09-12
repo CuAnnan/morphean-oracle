@@ -10,17 +10,7 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 
 const commands = [];
 
-for (const file of commandFiles)
-{
-    const module = await import(`./bot-commands/${file}`);
-    const command = module.default;
 
-    if ('data' in command && 'execute' in command) {
-        commands.push(command);
-    } else {
-        console.error(`Discord-Bot: The command at ${file} is missing a required "data" or "execute" property.`);
-    }
-}
 
 class DiscordClientContainer
 {
@@ -42,6 +32,19 @@ class DiscordClientContainer
         {
             return this;
         }
+
+        for (const file of commandFiles)
+        {
+            const module = await import(`./bot-commands/${file}`);
+            const command = module.default;
+
+            if ('data' in command && 'execute' in command) {
+                commands.push(command);
+            } else {
+                console.error(`Discord-Bot: The command at ${file} is missing a required "data" or "execute" property.`);
+            }
+        }
+
         const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
         client.commands = new Collection();

@@ -1,15 +1,15 @@
 import userHash from "../userHashFunction.js";
 import {SlashCommandBuilder} from 'discord.js';
 import { createRequire } from "module";
-import MongoConnectionFactory from "../MongoConnectionFactory.js";
-import QRCode from 'qrcode'
-import KithainSheet from "../Character Model/KithainSheet.js";
+import QRCode from 'qrcode';
+import SheetController from "../Controllers/SheetController.js";
 
 const require = createRequire(import.meta.url);
 const {webPresence} = require('../conf.json');
 const { AttachmentBuilder, EmbedBuilder } = require('discord.js');
 // ...
 
+const controller = new SheetController();
 
 export default {
     data: new SlashCommandBuilder()
@@ -23,7 +23,6 @@ export default {
     ,
     async execute(interaction) {
         const hashHex = await userHash(interaction);
-        const db = MongoConnectionFactory.getInstance();
         let args = interaction.options.getString('pool').toLowerCase();
 
         if(!args.match(/[a-z]+\/\d+/))
@@ -40,27 +39,17 @@ export default {
             return;
         }
 
-        db.collection('sheets').findOne({digest:hashHex}).then(
-            sheetJSON=>{
-                if(!sheetJSON)
-                {
-                    interaction.reply({content:"No sheet was found for you on this server", ephemeral:true});
-                    return;
-                }
-                KithainSheet.fromJSON(sheetJSON.sheet).then(
-                    /**
-                     * @param sheet {KithainSheet}
-                     */
-                    function(sheet){
-                        let result = sheet.gainTemporaryPool(pool, amount);
-                        let message = `You have gained ${amount} ${pool}`;
-                        for(let change of result)
-                        {
-                            message += `\nYour ${change.name} is now ${change.value}`;
-                        }
-                        interaction.reply({content:message, ephemeral:true});
+        controller.getSheetByDigest(hashHex).then(
+            (sheet)=>{
+                let result = sheet.gainTemporaryPool(pool, amount);
+                controller.saveSheetByDigest(hashHex).then(()=>{
+                    let message = `You have gained ${amount} ${pool}`;
+                    for(let change of result)
+                    {
+                        message += `\nYour ${change.name} is now ${change.value}`;
                     }
-                );
+                    interaction.reply({content:message, ephemeral:true});
+                });
             }
         ).catch(e=>
             {

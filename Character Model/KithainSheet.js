@@ -126,59 +126,49 @@ class KithainSheet extends Sheet
         this.imbalance = json.imbalance?json.imbalance:0;
     }
 
-    spendGlamour(amount)
+    gainTemporaryPool(pool, amount)
     {
-        if(this.glamourSpent + amount < this.glamour.level)
+        let changes = [];
+        switch(pool)
         {
-            throw new Error('You cannot afford that glamour expenditure');
+            case 'banality':
+                this.temporaryBanality += amount;
+                if(this.temporaryBanality >= 10)
+                {
+                    this.temporaryBanality = 0;
+                    this.banality.setFreeLevels(this.banality.freeLevels + 1);
+                    changes.unshift({name:'Permanent Banality', value:this.banality.level});
+                }
+                changes.unshift({name:'Temporary Banality', value:this.temporaryBanality});
+                break;
+            case 'willpower':
+                this.willpowerSpent -= amount;
+                if(this.willpowerSpent < 0)
+                {
+                    this.willpowerSpent = 0;
+                }
+                changes.unshift({name:'Willpower', value:this.willpower.level - this.willpowerSpent});
+                break;
+            case 'glamour':
+                this.glamourSpent -= amount;
+                if(this.glamourSpent < 0)
+                {
+                    this.glamourSpent = 0;
+                }
+                changes.unshift({name:'Glamour', value:this.glamour.level - this.glamourSpent});
+                break;
+            case 'nightmare':
+                this.nightmare += amount;
+                if(this.nightmare >= 10)
+                {
+                    this.imbalance++;
+                    this.nightmare = 0;
+                    changes.unshift({name:'Imbalance', value:this.imbalance});
+                }
+                changes.unshift({name:'Nightmare', value:this.nightmare});
+                break;
         }
-        this.glamourSpent += amount;
-    }
-
-    gainGlamour(amount = 1)
-    {
-        this.glamourSpent -= amount
-        if(this.glamourSpent < 0)
-        {
-            this.glamourSpent = 0;
-        }
-    }
-
-    spendWillpower(amount)
-    {
-        if(this.willpowerSpent + amount < this.willpower.level)
-        {
-            throw new Error('You cannot afford that willpower expenditure');
-        }
-        this.willpowerSpent += amount;
-    }
-
-    gainWillpower(amount= 1)
-    {
-        this.willpowerSpent -= amount;
-        if(this.willpowerSpent < 0)
-        {
-            this.willpowerSpent = 0;
-        }
-    }
-
-    loseTemporaryBanality(amount = 1)
-    {
-        this.temporaryBanality -= amount;
-        if(this.temporaryBanality < 0)
-        {
-            this.temporaryBanality = 0;
-        }
-    }
-
-    gainTemporaryBanality(amount = 1)
-    {
-        this.temporaryBanality += amount;
-        if(this.temporaryBanality >= 10)
-        {
-            this.temporaryBanality = 0;
-            this.banality.setFreeLevels(1);
-        }
+        return changes;
     }
 
     getCantripPool(traits)
@@ -219,6 +209,9 @@ class KithainSheet extends Sheet
                 this.traits.brawl.setFreeLevels(1);
                 break;
         }
+        this.glamour = this.traits.glamour;
+        this.willpower = this.traits.willpower;
+        this.banality = this.traits.banality;
     }
 
 }

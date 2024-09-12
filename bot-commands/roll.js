@@ -4,8 +4,10 @@ import {SlashCommandBuilder} from 'discord.js';
 import MongoConnectionFactory from '../MongoConnectionFactory.js';
 import KithainSheet from '../Character Model/KithainSheet.js';
 import DiceRoll from '../Character Model/DiceRoll.js';
-
 import userHash from "../userHashFunction.js";
+import SheetController from "../Controllers/SheetController.js";
+
+const controller = new SheetController();
 
 
 let helpText = '***roll syntax***\n\n\
@@ -79,16 +81,8 @@ export default {
 
             try
             {
-                let db = MongoConnectionFactory.getInstance();
-                let collection = db.collection('sheets');
                 let hashHex = await userHash(interaction);
-                let sheetJSON = await collection.findOne({digest:hashHex});
-                if(!sheetJSON)
-                {
-                    interaction.reply({content:"No sheet was found for you on this server", ephemeral:true});
-                    return;
-                }
-                let sheet = await KithainSheet.fromJSON(sheetJSON.sheet);
+                let sheet = await controller.getSheetByDigest(hashHex);
                 poolData = sheet.getPool(poolParts);
             }
             catch(e)
