@@ -38,8 +38,15 @@ class SheetController extends Controller
 
     async getSheetByNanoID(nanoid)
     {
-        let sheet = await this.getSheetDocumentByNanoID(nanoid);
-        return KithainSheet.fromJSON(sheet.sheet);
+        let cachedSheet = this.cache.get(nanoid);
+        if(!cachedSheet)
+        {
+            let document = await this.getSheetDocumentByNanoID(nanoid);
+            let sheet= await KithainSheet.fromJSON(document.sheet);
+            this.cache.put(nanoid, sheet);
+            cachedSheet = sheet;
+        }
+        return cachedSheet;
     }
 
     async getChannelIdFromRequest(req)
