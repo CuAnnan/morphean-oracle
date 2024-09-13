@@ -76,7 +76,6 @@ class Sheet
     static async fromJSON(json)
     {
         let sheet = new this(json.url);
-
         for(let traitJSON of json.traits)
         {
             sheet.addTraitFromJSON(traitJSON);

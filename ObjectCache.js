@@ -1,7 +1,8 @@
 'use strict';
 import crypto from 'crypto';
 
-const MAX_TTL_DEFAULT = 60000;
+const MAX_TTL_DEFAULT = 600000;
+const TIMER_DURATION_DEFAULT = 1000;
 
 function md5(data)
 {
@@ -51,25 +52,42 @@ class ObjectCacheEntity
  */
 class ObjectCache
 {
+    /**
+     * A static reference to a Singleton instance of the OC
+     * @type {ObjectCache}
+     */
     static #instance = null;
-    constructor(maxTTL)
+
+    /**
+     * The max lifetime of objects in the cache. When an ObjectCache's lifetime exceeds this, it's removed
+     * @type {Number}
+     */
+    maxTTL;
+    /**
+     * How often the cache should run the checkCache method.
+     * @type {Number};
+     */
+    timerDuration;
+    /**
+     * The dictionary of objectCacheEntities.
+     * @type {Object.<string,ObjectCacheEntity>}
+     */
+    cache = {};
+    /**
+     * The number of things in the cache.
+     * @type {Number};
+     */
+    size = 0;
+    /**
+     * Reference container for the timeOut.
+     */
+    #timeout;
+
+    constructor(maxTTL, timerDuration)
     {
-        /*
-         * the maximum life age of the items to be stored
-         */
-        this.maxTTL = maxTTL && !isNaN(maxTTL)?parseInt(maxTTL):MAX_TTL_DEFAULT;
-        /*
-         * A flat hash table to store the cached items in
-         */
-        this.cache = {};
-        /*
-         * A timed function to check the age of all items in the cache
-         */
-        this.timeout = setTimeout(()=>{this.checkCache();}, this.maxTTL);
-        /*
-         * The number of items in the cache
-         */
-        this.size = 0;
+        this.maxTTL = parseInt(maxTTL);
+        this.timerDuration = parseInt(timerDuration);
+        this.#timeout = setTimeout(()=>{this.checkCache();}, this.timerDuration);
     }
 
     /**
@@ -143,6 +161,20 @@ class ObjectCache
     }
 
     /**
+     * This adds a second reference to the cache's dictionary with a different key, allowing the same instance to be referenced by multiple keys.
+     * @param keyToLink
+     * @param keyToLinkAs
+     */
+    link(keyToLink, keyToLinkAs)
+    {
+        if(this.cache[keyToLink] !== undefined)
+        {
+            this.cache[keyToLink].refresh();
+            this.cache[keyToLinkAs] = this.cache[keyToLink];
+        }
+    }
+
+    /**
      * Remove an item from the cache by its key and return it
      * @param key
      */
@@ -173,7 +205,7 @@ class ObjectCache
     destroy()
     {
         this.clear();
-        clearTimeout(this.timeout);
+        clearTimeout(this.#timeout);
     }
 
     /**
@@ -189,7 +221,7 @@ class ObjectCache
      */
     checkCache()
     {
-        clearTimeout(this.timeout);
+        clearTimeout(this.#timeout);
         let removedItems = 0,
             now = Date.now();
 
@@ -202,10 +234,34 @@ class ObjectCache
             }
         }
         this.size -= removedItems;
-        this.timeout = setTimeout(() => {this.checkCache();}, this.maxTTL);
+        this.#timeout = setTimeout(() => {this.checkCache();}, this.timerDuration);
     }
 
-    static getInstance(maxTTL)
+    get debugJSON()
+    {
+        let debugJSON = {
+            size:this.size,
+            maxTTL:this.maxTTL,
+            entries:{}
+        };
+        let now = Date.now();
+        for(let [key, entry] of Object.entries(this.cache))
+        {
+            debugJSON.entries[key] = this.maxTTL - entry.since(now);
+        }
+        return debugJSON;
+    }
+
+    static initialise(maxTTL = MAX_TTL_DEFAULT)
+    {
+        this.#instance = new ObjectCache(maxTTL);
+    }
+
+    /**
+     * @param maxTTL
+     * @returns {ObjectCache}
+     */
+    static getInstance(maxTTL = MAX_TTL_DEFAULT)
     {
         if(this.#instance === null)
         {

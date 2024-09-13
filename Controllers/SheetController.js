@@ -55,7 +55,7 @@ class SheetController extends Controller
             let document = await this.getSheetDocumentByDigest(digest);
             let sheet= await KithainSheet.fromJSON(document.sheet);
             this.cache.put(digest, sheet);
-            this.cache.put(document.nanoid, sheet);
+            this.cache.link(digest, document.nanoid);
             cachedSheet = sheet;
         }
         return cachedSheet;
@@ -68,8 +68,8 @@ class SheetController extends Controller
         {
             let document = await this.getSheetDocumentByNanoID(nanoid);
             let sheet= await KithainSheet.fromJSON(document.sheet);
-            this.cache.put(document.digest, sheet);
             this.cache.put(nanoid, sheet);
+            this.cache.link(nanoid, document.digest);
             cachedSheet = sheet;
         }
         return cachedSheet;
@@ -83,7 +83,7 @@ class SheetController extends Controller
             throw new Error("Trying to update a sheet that is not in the cache");
         }
         let sheet = cachedSheet.toJSON();
-        this.db.collection('sheets').updateOne({digest:digest}, {$set:sheet}, {upsert:true});
+        this.db.collection('sheets').updateOne({digest:digest}, {$set:{sheet}}, {upsert:true});
     }
 
     async getChannelIdFromRequest(req)

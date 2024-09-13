@@ -1,17 +1,25 @@
-<% let traitDots = function(trait, max=5)
+<% let traitDots = function(trait, max=5, imbalanced=0)
 {
-    for(let i = 0; i < trait.level; i++)
+    for(let i = imbalanced; i < trait.level; i++)
     {
         %><i class="trait bx bxs-circle"></i><%
+    }
+    for(let i = 0 ; i < imbalanced; i++)
+    {
+        %><i class='bx bxs-bolt-circle' ></i><%
     }
     for(let i = trait.level; i < max; i++)
     {
         %><i class="trait bx bx-circle"></i><%
     }
 }
-let traitBoxes = function(trait)
+let traitBoxes = function(trait, spent = 0)
 {
-    for(let i = 0; i < trait.level; i++)
+    for(let i = 0; i < spent; i++)
+    {
+        %><i class='traitBox trait bx bxs-x-square'></i><%
+    }
+    for(let i = spent; i < trait.level; i++)
     {
         %><i class="traitBox trait bx bx-square"></i><%
     }
@@ -20,6 +28,7 @@ let traitBoxes = function(trait)
         %><i class="traitBox trait bx bxs-square"></i><%
     }
 }
+
 %>
 <div class="row"><h2 class="col text-center">Roller <i class="toggler bx bx-up-arrow-alt"></i></h2></div>
 <div class="row">
@@ -143,12 +152,12 @@ let traitBoxes = function(trait)
             <div class="col text-center"><% traitDots(sheet.traits.glamour, 10) %></div>
         </div>
         <div class="row">
-            <div class="col text-center"><% traitBoxes(sheet.traits.glamour) %></div>
+            <div class="col text-center"><% traitBoxes(sheet.traits.glamour, sheet.glamourSpent) %></div>
         </div>
 
         <div class="row"><h4 class="col text-center traitName">Willpower</h4></div>
         <div class="row">
-            <div class="col text-center"><% traitDots(sheet.traits.willpower, 10) %></div>
+            <div class="col text-center"><% traitDots(sheet.traits.willpower, 10, sheet.imbalance) %></div>
         </div>
         <div class="row">
             <div class="col text-center"><% traitBoxes(sheet.traits.willpower) %></div>
@@ -156,12 +165,15 @@ let traitBoxes = function(trait)
 
         <div class="row"><h4 class="col text-center traitName">Nightmare</h4></div>
         <div class="row">
-            <div class="col text-center"><% traitDots(sheet.traits.nightmare, 10) %></div>
+            <div class="col text-center"><% traitBoxes({level:10}, sheet.nightmare.level) %></div>
         </div>
 
         <div class="row"><h4 class="col text-center traitName">Banality</h4></div>
         <div class="row">
             <div class="col text-center"><% traitDots(sheet.traits.banality, 10) %></div>
+        </div>
+        <div class="row">
+            <div class="col text-center"><% traitBoxes({level:10}, sheet.temporaryBanality) %></div>
         </div>
 
     </div>

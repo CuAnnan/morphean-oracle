@@ -158,14 +158,15 @@ class KithainSheet extends Sheet
                 changes.unshift({name:'Glamour', value:this.glamour.level - this.glamourSpent});
                 break;
             case 'nightmare':
-                this.nightmare += amount;
-                if(this.nightmare >= 10)
+                this.nightmare.setFreeLevels(this.nightmare.level + amount);
+
+                if(this.nightmare.level >= 10)
                 {
                     this.imbalance++;
-                    this.nightmare = 0;
+                    this.nightmare.setFreeLevels(0);
                     changes.unshift({name:'Imbalance', value:this.imbalance});
                 }
-                changes.unshift({name:'Nightmare', value:this.nightmare});
+                changes.unshift({name:'Nightmare', value:this.nightmare.level});
                 break;
         }
         return changes;
@@ -212,6 +213,7 @@ class KithainSheet extends Sheet
         this.glamour = this.traits.glamour;
         this.willpower = this.traits.willpower;
         this.banality = this.traits.banality;
+        this.nightmare = this.traits.nightmare;
     }
 
 }
