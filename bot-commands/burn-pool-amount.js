@@ -1,16 +1,13 @@
 'use strict';
 import {SlashCommandBuilder} from 'discord.js';
 import SheetController from "../Controllers/SheetController.js";
-
-//
-
 import poolHelper from "./inc/poolHelper.js";
 
 const controller = new SheetController();
 
 export default {
     data: new SlashCommandBuilder()
-        .setName('gain-pool-amount')
+        .setName('burn-pool-amount')
         .setDescription("Gains an amount of a specified pool; glamour, banality, willpower or nightmare.")
         .addStringOption(option =>
             option
@@ -22,9 +19,9 @@ export default {
         poolHelper(interaction).then(({hashHex, pool, amount})=>{
             controller.getSheetByDigest(hashHex).then(
                 (sheet)=>{
-                    let result = sheet.gainTemporaryPool(pool, amount);
+                    let result = sheet.burnTemporaryPool(pool, amount);
                     controller.saveSheetByDigest(hashHex).then(()=>{
-                        let message = `You have gained ${amount} ${pool}`;
+                        let message = `You have burned ${amount} ${pool}`;
                         for(let change of result)
                         {
                             message += `\nYour ${change.name} is now ${change.value}`;

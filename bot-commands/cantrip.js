@@ -1,10 +1,7 @@
 'use strict';
-
 import {SlashCommandBuilder} from 'discord.js';
 import MongoConnectionFactory from '../MongoConnectionFactory.js';
 import KithainSheet from '../Character Model/KithainSheet.js';
-import DiceRoll from '../Character Model/DiceRoll.js';
-
 import userHash from "../userHashFunction.js";
 
 

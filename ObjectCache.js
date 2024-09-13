@@ -80,10 +80,11 @@ class ObjectCache
     size = 0;
     /**
      * Reference container for the timeOut.
+     * @type {Number}
      */
     #timeout;
 
-    constructor(maxTTL, timerDuration)
+    constructor(maxTTL = MAX_TTL_DEFAULT, timerDuration = TIMER_DURATION_DEFAULT)
     {
         this.maxTTL = parseInt(maxTTL);
         this.timerDuration = parseInt(timerDuration);

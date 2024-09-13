@@ -126,6 +126,39 @@ class KithainSheet extends Sheet
         this.imbalance = json.imbalance?json.imbalance:0;
     }
 
+    burnTemporaryPool(pool, amount)
+    {
+        let changes = [];
+        switch(pool)
+        {
+            case 'banality':
+                this.temporaryBanality = Math.max(this.temporaryBanality - amount, 0);
+                changes.unshift({name:'Temporary Banality', value:this.temporaryBanality});
+                break;
+            case 'willpower':
+                if(this.willpowerSpent + amount > this.willpower.level)
+                {
+                    throw new Error('Unaffordable expenditure');
+                }
+                this.willpowerSpent += amount;
+                changes.unshift({name:'Temporary Willpower', value:this.willpower.level - this.willpowerSpent});
+                break;
+            case 'glamour':
+                if(this.glamourSpent + amount > this.glamour.level)
+                {
+                    throw new Error('Unaffordable expenditure');
+                }
+                this.glamourSpent += amount;
+                changes.unshift({name:'Temporary Glamour', value:this.glamour.level - this.glamourSpent});
+                break;
+            case 'nightmare':
+                this.nightmare.setFreeLevels(Math.max(this.nightmare.freeLevels - amount, 0));
+                changes.unshift({name:'Nightmare', value:this.nightmare.level});
+                break;
+        }
+        return changes;
+    }
+
     gainTemporaryPool(pool, amount)
     {
         let changes = [];
