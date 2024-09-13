@@ -52,7 +52,6 @@ class SheetController extends Controller
         let cachedSheet = this.cache.get(digest);
         if(!cachedSheet || forceReload)
         {
-            console.log("Forcing Sheet update");
             let document = await this.getSheetDocumentByDigest(digest);
             let sheet= await KithainSheet.fromJSON(document.sheet);
             this.cache.put(digest, sheet);
