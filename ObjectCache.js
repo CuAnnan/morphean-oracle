@@ -172,6 +172,7 @@ class ObjectCache
             this.cache[keyToLink].refresh();
             this.cache[keyToLinkAs] = this.cache[keyToLink];
         }
+        this.size++;
     }
 
     /**

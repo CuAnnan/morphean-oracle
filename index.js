@@ -24,7 +24,7 @@ import cookieParser from 'cookie-parser';
 import sheetsRoute from './routes/sheets.js';
 import indexRoute from './routes/index.js';
 
-
+import ObjectCache from "./ObjectCache.js";
 
 import * as http from 'http';
 
@@ -32,6 +32,7 @@ import DiscordClientContainer from "./DiscordClientContainer.js";
 
 const port = 3030;
 
+ObjectCache.initialise(10000);
 
 MongoConnectionFactory.init(conf).then(async ()=>{
 
