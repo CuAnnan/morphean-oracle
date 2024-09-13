@@ -2,6 +2,8 @@ import userHash from "../userHashFunction.js";
 import {SlashCommandBuilder} from 'discord.js';
 import Sheet from "../Character Model/GoogleKithainSheet.js";
 import MongoConnectionFactory from "../MongoConnectionFactory.js";
+import SheetController from "../Controllers/SheetController.js";
+let controller = new SheetController();
 
 export default {
     data: new SlashCommandBuilder()
@@ -21,8 +23,14 @@ export default {
 
         Sheet.fromGoogleSheetsURL(sheet.url).then(async function(sheet){
             let sheetJSON = sheet.toJSON();
-            db.collection('sheets').updateOne({digest:hashHex}, {$set:{sheet:sheetJSON, guildId:interaction.guildId}}, {upsert:true});
-            interaction.reply({content:'Your sheet has been updated.', ephemeral:true});
+            db.collection('sheets').updateOne({digest:hashHex}, {$set:{sheet:sheetJSON, guildId:interaction.guildId}}, {upsert:true}).then(()=>{
+                controller.getSheetByDigest(hashHex, true).then(
+                    ()=>{
+                        interaction.reply({content:'Your sheet has been updated.', ephemeral:true});
+                    }
+                );
+            });
+
         }).catch((e)=>{
             interaction.reply({content:e.message, ephemeral:true});
         });

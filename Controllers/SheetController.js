@@ -47,11 +47,12 @@ class SheetController extends Controller
         return sheetJSON;
     }
 
-    async getSheetByDigest(digest)
+    async getSheetByDigest(digest, forceReload = false)
     {
         let cachedSheet = this.cache.get(digest);
-        if(!cachedSheet)
+        if(!cachedSheet || forceReload)
         {
+            console.log("Forcing Sheet update");
             let document = await this.getSheetDocumentByDigest(digest);
             let sheet= await KithainSheet.fromJSON(document.sheet);
             this.cache.put(digest, sheet);
@@ -61,10 +62,10 @@ class SheetController extends Controller
         return cachedSheet;
     }
 
-    async getSheetByNanoID(nanoid)
+    async getSheetByNanoID(nanoid, forceReload = false)
     {
         let cachedSheet = this.cache.get(nanoid);
-        if(!cachedSheet)
+        if(!cachedSheet || forceReload)
         {
             let document = await this.getSheetDocumentByNanoID(nanoid);
             let sheet= await KithainSheet.fromJSON(document.sheet);

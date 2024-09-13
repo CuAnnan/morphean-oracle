@@ -32,7 +32,7 @@ import DiscordClientContainer from "./DiscordClientContainer.js";
 
 const port = 3030;
 
-ObjectCache.initialise(10000);
+ObjectCache.initialise();
 
 MongoConnectionFactory.init(conf).then(async ()=>{
 
