@@ -45,7 +45,7 @@ class Sheet
         };
         for(let traitName of traitNames)
         {
-            if(typeof traitName !== 'number')
+            if(Number.isNaN(parseInt(traitName)))
             {
                 let trait = this.traits[traitName.toLowerCase()];
                 if(!trait)
