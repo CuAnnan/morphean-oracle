@@ -45,16 +45,24 @@ class Sheet
         };
         for(let traitName of traitNames)
         {
-            let trait = this.traits[traitName.toLowerCase()];
-            if(!trait)
+            if(typeof traitName !== 'number')
             {
-                throw new Error("Trait "+traitName+" not found");
+                let trait = this.traits[traitName.toLowerCase()];
+                if(!trait)
+                {
+                    throw new Error("Trait "+traitName+" not found");
+                }
+                poolData.dicePool += trait.level;
+                if(!trait.canRollUnlearned && trait.level === 0)
+                {
+                    poolData.valid = false;
+                }
             }
-            poolData.dicePool += trait.level;
-            if(!trait.canRollUnlearned && trait.level === 0)
+            else
             {
-                poolData.valid = false;
+                poolData.dicePool += Math.floor(traitName);
             }
+
         }
 
         return poolData;
