@@ -102,6 +102,10 @@ class DiceRoll
 
     buildDicePool()
     {
+        if(this.dicePool > 100)
+        {
+            throw new Error('No, Denis. Bad.');
+        }
         this.dice = [];
         for(let i = 0; i < this.dicePool; i++)
         {
