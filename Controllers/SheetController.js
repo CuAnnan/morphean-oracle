@@ -91,6 +91,56 @@ class SheetController extends Controller
         return (await this.getSheetDocumentByNanoID(req.params.hash)).channelId;
     }
 
+    async showNPCSheet(req, res)
+    {
+        let sheet = null;
+        const nanoid = req.params.hash;
+        let cachedSheet = this.cache.get(nanoid);
+        if(!cachedSheet)
+        {
+            let collection = this.db.collection('npcs');
+            let sheetJSON = await collection.findOne({nanoid:nanoid});
+
+            if(!sheetJSON)
+            {
+                res.render("noSheetFound");
+                return;
+            }
+
+            sheet= await KithainSheet.fromJSON(sheetJSON.sheet);
+            this.cache.put(nanoid, sheet);
+            this.cache.link(nanoid, sheetJSON.digest);
+            cachedSheet = sheet;
+        }
+
+        let kith = null;
+        if(sheet.kith)
+        {
+            kith = await this.db.collection('kiths').findOne({name:sheet.kith});
+        }
+        let house = null;
+        if(sheet.house)
+        {
+            house = await this.db.collection('houses').findOne({name:sheet.house});
+        }
+
+
+        let arts = [];
+        for(let [name, knownArt] of Object.entries(sheet.structuredTraits.art))
+        {
+            let art = {name:knownArt.name, cantrips:[]};
+            let artData = await this.db.collection('arts').findOne({name:art.name});
+            for(let i = 0; i < knownArt.level; i++)
+            {
+                art.cantrips.push(artData.levels[i])
+            }
+            arts.push(art);
+        }
+        let title = sheet.name;
+
+        res.render('sheets/kithainsheet', {hash:req.params.hash, sheet, sheetStructure, kith, house, arts, title});
+    }
+
     async showSheet(req, res)
     {
         let sheet = null;

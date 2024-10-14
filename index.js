@@ -23,12 +23,14 @@ import cookieParser from 'cookie-parser';
 
 import sheetsRoute from './routes/sheets.js';
 import indexRoute from './routes/index.js';
+import npcsRoute from './routes/npcs.js';
 
 import ObjectCache from "./ObjectCache.js";
 
 import * as http from 'http';
 
 import DiscordClientContainer from "./DiscordClientContainer.js";
+import npcs from "./routes/npcs.js";
 
 const port = 3030;
 
@@ -57,6 +59,7 @@ MongoConnectionFactory.init(conf).then(async ()=>{
 
     app.use('/', indexRoute);
     app.use('/sheets/', sheetsRoute);
+    app.use('/npcs/', npcsRoute);
 
     app.use(function(req, res, next) {
         next(createError(404));
