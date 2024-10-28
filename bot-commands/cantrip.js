@@ -4,6 +4,7 @@ import SheetController from "../Controllers/SheetController.js";
 
 import userHash from "../userHashFunction.js";
 import Cantrip from "../Character Model/Cantrip.js";
+import rollParser from "./inc/poolParser.js";
 
 
 
@@ -30,84 +31,30 @@ export default {
                 .setDescription('A space separated list of modifiers. "wi" or "willpower", "wy" or "wyrd", "spec" or "specialty"'))
     ,
     async execute(interaction) {
-        let args = interaction.options.getString('pool').toLowerCase();
-        if(args === 'help')
+        let {parts, diff, mods} = rollParser(interaction, helpText);
+
+        let poolArray = parts.split('+');
+        if(poolArray.length !== 2)
         {
-            interaction.reply({content:helpText});
+            interaction.reply({message: poolArray.join(' + ')+' is not a valid pool', ephemeral:true});
             return;
         }
+        let poolParts = [];
 
 
-        let modsRaw = interaction.options.getString('modifiers');
-        let mods = [];
-        if(modsRaw)
+        for(let part of poolArray)
         {
-            mods = modsRaw.toLowerCase().split(' ');
+            poolParts.push(part.toLowerCase().trim());
         }
-
-        let willpower = false;
-        let wyrd = false;
-        let specialty = false;
-        for(let mod of mods)
+        try
         {
-            if(mod === 'wi' || mod === 'willpower')
-            {
-                willpower = true;
-            }
-            else if(mod === 'wy' || mod === 'wyrd')
-            {
-                wyrd = true;
-            }
-            else if(mod === 'spec' || mod === 'specialty')
-            {
-                specialty = true;
-            }
-        }
+            let hashHex = await userHash(interaction);
 
-        let [parts, diff] = args.split('vs');
-        let sheet, hashHex;
-        parts = parts.trim();
-        let poolData = null;
-        if(Number.isNaN(parseInt(parts)))
-        {
-            diff = diff?diff:8;
-            let poolArray = parts.split('+');
-
-            let poolParts = [];
-            for(let part of poolArray)
-            {
-                poolParts.push(part.toLowerCase().trim());
-            }
-            try
-            {
-                hashHex = await userHash(interaction);
-                sheet = await controller.getSheetByDigest(hashHex);
-                poolData = sheet.getCantripPool(poolParts);
-            }
-            catch(e)
-            {
-                console.log(e);
-                console.log(e.message);
-                interaction.reply({content:e.message, ephemeral:true});
-                return;
-            }
-        }
-        else
-        {
-            poolData = {traits: [parts], dicePool:parseInt(parts)};
-        }
-
-        try {
-            let pool = Object.assign({}, poolData, {diff, specialty, wyrd, willpower, });
-
-            let cantrip = new Cantrip(pool);
-            let roll = cantrip.resolve();
-
+            let roll = await controller.resolveCantrip(hashHex, poolParts, mods);
 
             let content = `**Cantrip result:**\n**Pool:** ${roll.traits.join(' + ')}\n**Difficulty:** ${roll.diff}\n**Result:** ${roll.result}\n`;
 
             let normalDiceFaces =[];
-            let normalFaceContent = '';
             if(roll.normalDice.length > 0)
             {
                 for(let die of roll.normalDice)
@@ -136,17 +83,20 @@ export default {
 
             if(roll.nightmareGained)
             {
-                content += `**Nightmare Gained:** ${roll.nightmareGained}`;
-                sheet.gainTemporaryPool('nightmare', roll.nightmareGained);
-                await controller.saveSheetByDigest(hashHex);
-
+                content += `**Nightmare Gained:** ${roll.nightmareGained}\n`;
             }
+            content += `**Successes:** ${roll.successes}`;
             interaction.reply({content});
         }
         catch(e)
         {
             console.log(e);
-            interaction.reply({content:"An error occured", ephemeral:true});
+            console.log(e.message);
+            interaction.reply({content:e.message, ephemeral:true});
+            return;
         }
+
+
+
     },
 };

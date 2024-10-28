@@ -194,6 +194,22 @@ class SheetController extends Controller
         }
     }
 
+    async resolveCantrip(digest, poolData, mods)
+    {
+        let sheet = await this.getSheetByDigest(digest);
+        let pool = Object.assign({}, poolData, mods);
+        let cantripPool = await sheet.getCantripPool(poolData);
+        let cantrip = new Cantrip(cantripPool);
+        let result = cantrip.resolve();
+        if(result.nightmareGained)
+        {
+            sheet.gainTemporaryPool('nightmare', result.nightmareGained);
+
+            await this.saveSheetByDigest(digest);
+        }
+        return result;
+    }
+
     async handleCantripFetchRequest(req, res)
     {
         this.getSheetDocumentByNanoID(req.params.hash).then((document)=>{

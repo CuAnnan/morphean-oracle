@@ -6,6 +6,7 @@ import KithainSheet from '../Character Model/KithainSheet.js';
 import DiceRoll from '../Character Model/DiceRoll.js';
 import userHash from "../userHashFunction.js";
 import SheetController from "../Controllers/SheetController.js";
+import rollParser from './inc/poolParser.js';
 
 const controller = new SheetController();
 
@@ -31,43 +32,12 @@ export default {
                     .setDescription('A space separated list of modifiers. "wi" or "willpower", "wy" or "wyrd", "spec" or "specialty"'))
     ,
     async execute(interaction) {
-        let args = interaction.options.getString('pool').toLowerCase();
-        if(args === 'help')
-        {
-            interaction.reply({content:helpText});
-            return;
-        }
 
-        
-        let modsRaw = interaction.options.getString('modifiers');
-        let mods = [];
-        if(modsRaw)
-        {
-            mods = modsRaw.toLowerCase().split(' ');
-        }
-        
-        let willpower = false;
-        let wyrd = false;
-        let specialty = false;
-        for(let mod of mods)
-        {
-            if(mod === 'wi' || mod === 'willpower')
-            {
-                willpower = true;
-            }
-            else if(mod === 'wy' || mod === 'wyrd')
-            {
-                wyrd = true;
-            }
-            else if(mod === 'spec' || mod === 'specialty')
-            {
-                specialty = true;
-            }
-        }
-
-        let [parts, diff] = args.split('vs');
-        parts = parts.trim();
         let poolData = null;
+
+
+        let {parts, diff, mods} = rollParser(interaction, helpText);
+
         if(Number.isNaN(parseInt(parts)))
         {
             diff = diff?diff:6;
@@ -98,7 +68,7 @@ export default {
             poolData = {traits: [parts], dicePool:parseInt(parts)};
         }
 
-        let pool = Object.assign({}, poolData, {diff, specialty, wyrd, willpower})
+        let pool = Object.assign({}, poolData, mods)
         let roll = new DiceRoll(pool);
         if(roll.dicePool >= 100)
         {

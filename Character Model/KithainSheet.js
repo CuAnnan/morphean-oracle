@@ -218,6 +218,14 @@ class KithainSheet extends Sheet
         return pool;
     }
 
+    resolveCantrip(traits)
+    {
+        let pool = this.getPool(traits);
+        pool.nightmare = this.nightmare;
+
+
+    }
+
     finalize()
     {
         switch(this.kith)
