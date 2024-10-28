@@ -9,9 +9,9 @@ import rollParser from "./inc/poolParser.js";
 
 
 const helpText = '***roll syntax***\n\n\
-`/roll <n>` This will roll <n> dice. Eg. `/roll 6` will roll 6 dice\n\
-`/roll <Art>` + <Realm> This will roll a cantirip using these traits\n\
-`/roll <Pool> vs <diff>` this allows you to specify what difficulty to roll a pool at. If no difficulty is provided, the difficulty will be 8';
+/cantrip  <Art>` + <Realm> [vs <diff>]\n\
+This will roll a Cantrip using this art and realm. It calculates the nightmare increases owed and updates your character sheet with these values. If you need to apply modifiers to the cantrip (like willpower), press tab to move to the modifiers input. Then fill in space separated modifiers:\
+ "wy" or "wyrd", "wi" or "willpower", "ni" or "night" or "nightmare".' ;
 
 const controller = new SheetController();
 
@@ -23,12 +23,12 @@ export default {
         .addStringOption(option =>
             option
                 .setName('pool')
-                .setDescription("The pool to roll. For syntax just enter help")
+                .setDescription("The art and realm to roll vs the difficulty to roll them at.")
                 .setRequired(true))
         .addStringOption(option =>
             option
                 .setName('modifiers')
-                .setDescription('A space separated list of modifiers. "wi" or "willpower", "wy" or "wyrd", "spec" or "specialty"'))
+                .setDescription('A space separated list of modifiers.'))
     ,
     async execute(interaction) {
         let {parts, diff, mods} = rollParser(interaction, helpText);
@@ -50,7 +50,7 @@ export default {
         {
             let hashHex = await userHash(interaction);
 
-            let roll = await controller.resolveCantrip(hashHex, poolParts, mods);
+            let roll = await controller.resolveCantrip(hashHex, poolParts, diff, mods);
 
             let content = `**Cantrip result:**\n**Pool:** ${roll.traits.join(' + ')}\n**Difficulty:** ${roll.diff}\n**Result:** ${roll.result}\n`;
 

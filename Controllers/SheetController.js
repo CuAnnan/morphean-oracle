@@ -194,7 +194,7 @@ class SheetController extends Controller
         }
     }
 
-    async resolveCantrip(digest, poolData, mods)
+    async resolveCantrip(digest, poolData, diff, mods)
     {
         let sheet = await this.getSheetByDigest(digest);
         let pool = Object.assign({}, poolData, mods);
