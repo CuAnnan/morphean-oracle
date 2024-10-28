@@ -66,11 +66,11 @@ class KithainSheet extends Sheet
 
     increaseNightmare(amount)
     {
-        this.nightmare += amount;
-        if(this.nightmare >= 10)
+        this.nightmare.freeLevels += amount;
+        if(this.nightmare.level >= 10)
         {
             this.imbalance++;
-            this.nightmare = 0;
+            this.nightmare.freeLevels = 0;
         }
         return this.nightmare;
     }
@@ -96,6 +96,12 @@ class KithainSheet extends Sheet
         if(traitJSON.type === 'Glamour' || traitJSON.type === 'Willpower')
         {
             let trait = new constructor(traitJSON.cp, traitJSON.fp, traitJSON.xp);
+            trait.setFreeLevels(traitJSON.freeLevels);
+            this.addTrait(trait);
+        }
+        else if (traitJSON.name === 'Nightmare' || traitJSON.name === 'Banality')
+        {
+            let trait = new constructor(traitJSON.name, traitJSON.cp, traitJSON.fp, traitJSON.xp);
             trait.setFreeLevels(traitJSON.freeLevels);
             this.addTrait(trait);
         }

@@ -1,15 +1,18 @@
 'use strict';
 import {SlashCommandBuilder} from 'discord.js';
-import MongoConnectionFactory from '../MongoConnectionFactory.js';
-import KithainSheet from '../Character Model/KithainSheet.js';
+import SheetController from "../Controllers/SheetController.js";
+
 import userHash from "../userHashFunction.js";
+import Cantrip from "../Character Model/Cantrip.js";
 
 
 
-let helpText = '***roll syntax***\n\n\
+const helpText = '***roll syntax***\n\n\
 `/roll <n>` This will roll <n> dice. Eg. `/roll 6` will roll 6 dice\n\
 `/roll <Art>` + <Realm> This will roll a cantirip using these traits\n\
 `/roll <Pool> vs <diff>` this allows you to specify what difficulty to roll a pool at. If no difficulty is provided, the difficulty will be 8';
+
+const controller = new SheetController();
 
 
 export default {
@@ -62,6 +65,7 @@ export default {
         }
 
         let [parts, diff] = args.split('vs');
+        let sheet, hashHex;
         parts = parts.trim();
         let poolData = null;
         if(Number.isNaN(parseInt(parts)))
@@ -72,21 +76,12 @@ export default {
             let poolParts = [];
             for(let part of poolArray)
             {
-                poolParts.push(part.trim());
+                poolParts.push(part.toLowerCase().trim());
             }
-
             try
             {
-                let db = MongoConnectionFactory.getInstance();
-                let collection = db.collection('sheets');
-                let hashHex = await userHash(interaction);
-                let sheetJSON = await collection.findOne({digest:hashHex});
-                if(!sheetJSON)
-                {
-                    interaction.reply({content:"No sheet was found for you on this server", ephemeral:true});
-                    return;
-                }
-                let sheet = await KithainSheet.fromJSON(sheetJSON.sheet);
+                hashHex = await userHash(interaction);
+                sheet = await controller.getSheetByDigest(hashHex);
                 poolData = sheet.getCantripPool(poolParts);
             }
             catch(e)
@@ -101,14 +96,57 @@ export default {
         {
             poolData = {traits: [parts], dicePool:parseInt(parts)};
         }
-        let pool = Object.assign({}, poolData, {diff, specialty, wyrd, willpower, });
-        let roll = new Cantrip(pool).resolve();
-        let dice = roll.faces.sort((a,b)=>a-b).map((x)=>x === 1?`__*${x}*__`:(x >= roll.diff?`**${x}**`:x));
-        let content = `**Cantrip result:**\n**Pool:** ${roll.traits.join(' + ')}\n**Difficulty:** ${roll.diff}\n**Result:** ${roll.result}\n**Dice:** ${dice.join(" ")}\n**Successes:** ${roll.successes}`;
-        if(roll.nightmareGained)
-        {
-            content += `\n**Nightmare Gained:** ${$roll.nightmareGained}`;
+
+        try {
+            let pool = Object.assign({}, poolData, {diff, specialty, wyrd, willpower, });
+
+            let cantrip = new Cantrip(pool);
+            let roll = cantrip.resolve();
+
+
+            let content = `**Cantrip result:**\n**Pool:** ${roll.traits.join(' + ')}\n**Difficulty:** ${roll.diff}\n**Result:** ${roll.result}\n`;
+
+            let normalDiceFaces =[];
+            let normalFaceContent = '';
+            if(roll.normalDice.length > 0)
+            {
+                for(let die of roll.normalDice)
+                {
+                    for(let face of die.faces)
+                    {
+                        normalDiceFaces.push(face);
+                    }
+                }
+                content += `**Normal dice:** ${normalDiceFaces.join(', ')}\n`;
+            }
+            let nightmareDice = [];
+            if(roll.nightmareDice.length > 0)
+            {
+                for(let die of roll.nightmareDice)
+                {
+                    for(let face of die.faces)
+                    {
+                        nightmareDice.push(face);
+                    }
+                }
+                content += `**Nightmare dice:** ${nightmareDice.join(', ')}\n`;
+            }
+
+
+
+            if(roll.nightmareGained)
+            {
+                content += `**Nightmare Gained:** ${roll.nightmareGained}`;
+                sheet.gainTemporaryPool('nightmare', roll.nightmareGained);
+                await controller.saveSheetByDigest(hashHex);
+
+            }
+            interaction.reply({content});
         }
-        interaction.reply({content});
+        catch(e)
+        {
+            console.log(e);
+            interaction.reply({content:"An error occured", ephemeral:true});
+        }
     },
 };

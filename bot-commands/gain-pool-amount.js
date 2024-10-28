@@ -22,6 +22,7 @@ export default {
         poolHelper(interaction).then(({hashHex, pool, amount})=>{
             controller.getSheetByDigest(hashHex).then(
                 (sheet)=>{
+
                     let result = sheet.gainTemporaryPool(pool, amount);
                     controller.saveSheetByDigest(hashHex).then(()=>{
                         let message = `You have gained ${amount} ${pool}`;
@@ -34,6 +35,7 @@ export default {
                 }
             ).catch(e=>
                 {
+                    console.log(e);
                     interaction.reply({content:'There was an error', ephemeral:true})
                 }
             );

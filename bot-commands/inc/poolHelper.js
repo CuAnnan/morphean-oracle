@@ -11,7 +11,7 @@ export default function(interaction)
                 let args = interaction.options.getString('pool').toLowerCase();
                 if(args.match(/[a-z]+\/\d+/))
                 {
-                    [pool, amount] = args.split('/');
+                    let [pool, amount] = args.split('/');
                     data.amount = parseInt(amount);
                     data.pool = pool;
                 }

@@ -111,6 +111,7 @@ class DiceRoll
         {
             this.dice.push(new Die(this));
         }
+        return this;
     }
 
     resolve()
