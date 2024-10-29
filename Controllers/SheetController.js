@@ -197,15 +197,49 @@ class SheetController extends Controller
     async resolveCantrip(digest, poolData, diff, mods)
     {
         let sheet = await this.getSheetByDigest(digest);
-        let pool = Object.assign({}, poolData, mods);
         let cantripPool = await sheet.getCantripPool(poolData);
-        let cantrip = new Cantrip(cantripPool);
+        let pool = Object.assign({}, cantripPool, mods);
+
+        let cantrip = new Cantrip(pool);
+
         let result = cantrip.resolve();
         if(result.nightmareGained)
         {
             sheet.gainTemporaryPool('nightmare', result.nightmareGained);
 
             await this.saveSheetByDigest(digest);
+        }
+        return result;
+    }
+
+    async resolveUnleashing(digest, artName, diff, mods)
+    {
+        let sheet= await this.getSheetByDigest(digest);
+        let art = sheet.traits[artName];
+        if(!art)
+        {
+            throw Error('Art '+artName+' not found on your sheet');
+        }
+        if(art.constructor.name !== 'Art')
+        {
+            throw Error(artName+' is not an art');
+        }
+
+
+        sheet.gainTemporaryPool('nightmare', 1);
+        let unleashingPool = sheet.getUnleashingPool();
+
+        let pool = Object.assign({}, unleashingPool, mods);
+        pool.artLevel = art.level;
+
+        let unleashing = new Unleashing(pool);
+        let result = unleashing.resolve();
+
+        if(result.nightmareGained)
+        {
+            sheet.gainTemporaryPool('nightmare', result.nightmareGained);
+
+            //await this.saveSheetByDigest(digest);
         }
         return result;
     }

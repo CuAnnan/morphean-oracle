@@ -13,6 +13,10 @@ class Unleashing extends Cantrip
     {
         let result = super.resolve();
         result.runaway = (result.successes > this.artLevel);
+        if(result.runaway)
+        {
+            result.result = 'Runaway';
+        }
         return result;
     }
 }

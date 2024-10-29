@@ -8,21 +8,21 @@ import rollParser from "./inc/poolParser.js";
 
 
 const helpText = '***roll syntax***\n\n\
-/cantrip  <Art>` + <Realm> [vs <diff>]\n\
-This will roll a Cantrip using this art and realm. It calculates the nightmare increases owed and updates your character sheet with these values. If you need to apply modifiers to the cantrip (like willpower), press tab to move to the modifiers input. Then fill in space separated modifiers:\
- "wy" or "wyrd", "wi" or "willpower", "ni" or "night" or "nightmare".' ;
+/unleash  <Art> [vs <diff>]\n\
+This will Unleash an Art and do all of the character modifications involved. Fill in the art name vs the diff. If the Unleashing roll needs to be modified, then press tab to go to modifiers. Then fill in space separated modifiers:\
+ "wy" or "wyrd", "wi" or "willpower".' ;
 
 const controller = new SheetController();
 
 
 export default {
     data: new SlashCommandBuilder()
-        .setName('cantrip')
-        .setDescription("Roll a cantrip")
+        .setName('unleash')
+        .setDescription("Unleash a cantrip")
         .addStringOption(option =>
             option
                 .setName('pool')
-                .setDescription("The art and realm to roll vs the difficulty to roll them at.")
+                .setDescription("The art Unleash vs the difficulty.")
                 .setRequired(true))
         .addStringOption(option =>
             option
@@ -30,32 +30,19 @@ export default {
                 .setDescription('A space separated list of modifiers.'))
     ,
     async execute(interaction) {
-        let {parts, diff, mods} = rollParser(interaction, helpText);
-
-        let poolArray = parts.split('+');
-        if(poolArray.length !== 2)
-        {
-            interaction.reply({message: poolArray.join(' + ')+' is not a valid pool', ephemeral:true});
-            return;
-        }
-        let poolParts = [];
-
-
-        for(let part of poolArray)
-        {
-            poolParts.push(part.toLowerCase().trim());
-        }
+        await interaction.deferReply();
         try
         {
+            let {parts, diff, mods} = rollParser(interaction, helpText);
             let hashHex = await userHash(interaction);
 
-            let roll = await controller.resolveCantrip(hashHex, poolParts, diff, mods);
+            let roll = await controller.resolveUnleashing(hashHex, parts, diff, mods);
 
-            let content = `**Cantrip result:**\n**Pool:** ${roll.traits.join(' + ')}\n**Difficulty:** ${roll.diff}\n**Result:** ${roll.result}\n`;
+            let content = `**Unleashing result:**\n**Pool:** ${roll.traits.join(' + ')}\n**Difficulty:** ${roll.diff}\n**Result:** ${roll.result}\n`;
 
-            let normalDiceFaces =[];
             if(roll.normalDice.length > 0)
             {
+                let normalDiceFaces =[];
                 for(let die of roll.normalDice)
                 {
                     for(let face of die.faces)
@@ -65,9 +52,10 @@ export default {
                 }
                 content += `**Normal dice:** ${normalDiceFaces.join(', ')}\n`;
             }
-            let nightmareDice = [];
+
             if(roll.nightmareDice.length > 0)
             {
+                let nightmareDice = [];
                 for(let die of roll.nightmareDice)
                 {
                     for(let face of die.faces)
@@ -84,18 +72,15 @@ export default {
             {
                 content += `**Nightmare Gained:** ${roll.nightmareGained}\n`;
             }
+
+
             content += `**Successes:** ${roll.successes}`;
-            interaction.reply({content});
+
+            await interaction.editReply(content);
         }
         catch(e)
         {
-            console.log(e);
-            console.log(e.message);
-            interaction.reply({content:e.message, ephemeral:true});
-            return;
+            await interaction.editReply({content:e.message, ephemeral:true});
         }
-
-
-
     },
 };
