@@ -13,15 +13,15 @@
         %><i class="trait bx bx-circle"></i><%
     }
 }
-let traitBoxes = function(trait, spent = 0)
+let traitBoxes = function(trait, spent = 0, fuel = '')
 {
     for(let i = 0; i < spent; i++)
     {
-        %><i class='traitBox trait bx bxs-x-square'></i><%
+        %><i class="traitBox trait bx bxs-x-square"<%- fuel?` data-fuel="${fuel}"`:''%>></i><%
     }
     for(let i = spent; i < trait.level; i++)
     {
-        %><i class="traitBox trait bx bx-square"></i><%
+        %><i class="traitBox trait bx bx-square"<%- fuel?` data-fuel="${fuel}"`:''%>></i><%
     }
     for(let i = trait.level ; i < 10; i++)
     {
@@ -30,8 +30,8 @@ let traitBoxes = function(trait, spent = 0)
 }
 
 %>
-<div class="row"><h2 class="col text-center">Roller <i class="toggler bx bx-up-arrow-alt"></i></h2></div>
-<div class="row">
+<div class="row rolling"><h2 class="col text-center">Roller <i class="toggler bx bx-up-arrow-alt"></i></h2></div>
+<div class="row rolling">
 
     <div class="col-12 col-lg-10">
         <div class="row">
@@ -63,21 +63,30 @@ let traitBoxes = function(trait, spent = 0)
 
 <div class="row"><h2 class="col text-center">Personal Details <i class="toggler bx bx-up-arrow-alt"></i></h2></div>
 <div class="row">
-    <div class="col-6 col-lg-2"><strong>Name</strong></div><div class="col-6 col-lg-2"><%-sheet.name%></div>
-    <div class="col-6 col-lg-2"><strong>Court</strong></div><div class="col-6 col-lg-2"><%-sheet.court%></div>
-    <div class="col-6 col-lg-2"><strong>Seeming</strong></div><div class="col-6 col-lg-2"><%-sheet.seeming%></div>
-    <div class="col-6 col-lg-2"><strong>Player</strong></div><div class="col-6 col-lg-2"><%-sheet.player%></div>
-    <div class="col-6 col-lg-2"><strong>Legacies</strong></div><div class="col-6 col-lg-2"><%-sheet.legacies.seelie%> / <%- sheet.legacies.unseelie%></div>
-    <div class="col-6 col-lg-2"><strong>Kith</strong></div><div class="col-6 col-lg-2"><%-sheet.kith%></div>
-    <div class="col-6 col-lg-2"><strong>Chronicle</strong></div><div class="col-6 col-lg-2"><%-sheet.chronicle%></div>
-    <div class="col-6 col-lg-2"><strong>House</strong></div><div class="col-6 col-lg-2"><%-sheet.house%></div>
-    <div class="col-6 col-lg-2"><strong>Motley</strong></div><div class="col-6 col-lg-2"><%-sheet.motley%></div>
+    <div class="col-md-2 col-6 col-lg-2"><strong>Name</strong></div>
+    <div class="col-md-2 col-6 col-lg-2"><%-sheet.name%></div>
+    <div class="col-md-2 col-6 col-lg-2"><strong>Court</strong></div>
+    <div class="col-md-2 col-6 col-lg-2"><%-sheet.court%></div>
+    <div class="col-md-2 col-6 col-lg-2"><strong>Seeming</strong></div>
+    <div class="col-md-2 col-6 col-lg-2"><%-sheet.seeming%></div>
+    <div class="col-md-2 col-6 col-lg-2"><strong>Player</strong></div>
+    <div class="col-md-2 col-6 col-lg-2"><%-sheet.player%></div>
+    <div class="col-md-2 col-6 col-lg-2"><strong>Legacies</strong></div>
+    <div class="col-md-2 col-6 col-lg-2"><%-sheet.legacies.seelie%> / <%- sheet.legacies.unseelie%></div>
+    <div class="col-md-2 col-6 col-lg-2"><strong>Kith</strong></div>
+    <div class="col-md-2 col-6 col-lg-2"><%-sheet.kith%></div>
+    <div class="col-md-2 col-6 col-lg-2"><strong>Chronicle</strong></div>
+    <div class="col-md-2 col-6 col-lg-2"><%-sheet.chronicle%></div>
+    <div class="col-md-2 col-6 col-lg-2"><strong>House</strong></div>
+    <div class="col-md-2 col-6 col-lg-2"><%-sheet.house%></div>
+    <div class="col-md-2 col-6 col-lg-2"><strong>Motley</strong></div>
+    <div class="col-md-2 col-6 col-lg-2"><%-sheet.motley%></div>
 </div>
 
 <div class="row"><h2 class="col text-center">Attributes <i class="toggler bx bx-up-arrow-alt"></i></h2></div>
 <div class="row">
     <% for(let [useGroupName, useGroup] of Object.entries(sheetStructure.attributes)) {
-    %><div class="col-12 col-lg-4">
+    %><div class="col-12 col-md-4 col-lg-4">
         <div class="row"><div class="col text-center"><strong><%- useGroupName%></strong></div></div>
         <% for(let traitName of useGroup)
         {
@@ -96,7 +105,7 @@ let traitBoxes = function(trait, spent = 0)
 <div class="row"><h2 class="col text-center">Abilities <i class="toggler bx bx-up-arrow-alt"></i></h2></div>
 <div class="row">
     <% for(let [useGroupName, useGroup] of Object.entries(sheetStructure.abilities)) {
-    %><div class="col-12 col-lg-4">
+    %><div class="col-12 col-md-4 col-lg-4">
         <div class="row"><div class="col text-center"><strong class="traitName"><%- useGroupName%></strong></div></div>
         <% for(let traitName of useGroup)
         {
@@ -114,7 +123,7 @@ let traitBoxes = function(trait, spent = 0)
 </div>
 <div class="row"><h2 class="col text-center">Advantages <i class="toggler bx bx-up-arrow-alt"></i></h2></div>
 <div class="row">
-    <div class="col-12 col-lg-4">
+    <div class="col-12 col-md-4 col-lg-4">
         <div class="row"><strong class="text-center">Backgrounds</strong></div>
         <% for(let [name, background] of Object.entries(sheet.structuredTraits.background)) {%>
             <div class="row">
@@ -123,7 +132,7 @@ let traitBoxes = function(trait, spent = 0)
             </div>
         <%} %>
     </div>
-    <div class="col-12 col-lg-4">
+    <div class="col-12 col-md-4 col-lg-4">
         <div class="row"><strong class="text-center">Arts</strong></div>
         <% for(let [name, art] of Object.entries(sheet.structuredTraits.art)) {%>
             <div class="row">
@@ -132,7 +141,7 @@ let traitBoxes = function(trait, spent = 0)
             </div>
         <%} %>
     </div>
-    <div class="col-12 col-lg-4">
+    <div class="col-12 col-md-4 col-lg-4">
         <div class="row"><strong class="text-center">Realms</strong></div>
         <% for(let [name, realm] of Object.entries(sheet.structuredTraits.realm)) {%>
             <div class="row">
@@ -144,15 +153,16 @@ let traitBoxes = function(trait, spent = 0)
 </div>
 <div class="row"><h2 class="col text-center">Health and Spendables  <i class="toggler bx bx-up-arrow-alt"></i></h2></div>
 <div class="row">
-    <div class="col-12 col-lg-4">
+    <div class="col-12 col-md-4 col-lg-4">
+        <img src="/npcs/qrcode/<%-nanoid%>"/>
     </div>
-    <div class="col-12 col-lg-4">
+    <div class="col-12 col-md-4 col-lg-4">
         <div class="row"><h4 class="col text-center traitName">Glamour</h4></div>
         <div class="row">
             <div class="col text-center"><% traitDots(sheet.traits.glamour, 10) %></div>
         </div>
         <div class="row">
-            <div class="col text-center"><% traitBoxes(sheet.traits.glamour, sheet.glamourSpent) %></div>
+            <div class="col text-center"><% traitBoxes(sheet.traits.glamour, sheet.glamourSpent, 'glamourSpent') %></div>
         </div>
 
         <div class="row"><h4 class="col text-center traitName">Willpower</h4></div>
@@ -160,7 +170,7 @@ let traitBoxes = function(trait, spent = 0)
             <div class="col text-center"><% traitDots(sheet.traits.willpower, 10, sheet.imbalance) %></div>
         </div>
         <div class="row">
-            <div class="col text-center"><% traitBoxes(sheet.traits.willpower) %></div>
+            <div class="col text-center"><% traitBoxes(sheet.traits.willpower, sheet.willpowerSpent, 'willpowerSpent') %></div>
         </div>
 
         <div class="row"><h4 class="col text-center traitName">Nightmare</h4></div>
@@ -177,7 +187,7 @@ let traitBoxes = function(trait, spent = 0)
         </div>
 
     </div>
-    <div class="col-12 col-lg-4">
+    <div class="col-12 col-md-4 col-lg-4">
         <div class="row"><h4 class="col text-center">Health</h4></div>
         <div class="row">
             <div class="col text-end">Unbruised</div>

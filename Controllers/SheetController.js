@@ -8,7 +8,10 @@ import Cantrip from '../Character Model/Cantrip.js';
 import Unleashing from '../Character Model/Unleashing.js';
 
 import userHash from "../userHashFunction.js";
-
+import QRCode from 'qrcode';
+import {createRequire} from "module";
+const require = createRequire(import.meta.url);
+const {webPresence} = require('../conf.json');
 
 const sheetStructure = {
     attributes:{
@@ -36,6 +39,19 @@ class SheetController extends Controller
         return sheetJSON;
     }
 
+    async getQRCode(req, res)
+    {
+        const url = `${webPresence}/sheets/view/${req.params.nanoid}`;
+        const qrCode = await QRCode.toBuffer(url);
+        res.json({dataURL:qrCode});
+    }
+
+    async fetchNPCQrCode(req, res)
+    {
+        const url = `${webPresence}/npcs/view/${req.params.nanoid}`;
+        const qrCode = await QRCode.toBuffer(url);
+        res.send(qrCode);
+    }
     async getSheetDocumentByDigest(digest)
     {
         let collection = this.db.collection('sheets');
@@ -96,6 +112,8 @@ class SheetController extends Controller
         let sheet = null;
         const nanoid = req.params.hash;
         let cachedSheet = this.cache.get(nanoid);
+
+
         if(!cachedSheet)
         {
             let collection = this.db.collection('npcs');
@@ -111,6 +129,10 @@ class SheetController extends Controller
             this.cache.put(nanoid, sheet);
             this.cache.link(nanoid, sheetJSON.digest);
             cachedSheet = sheet;
+        }
+        else
+        {
+            sheet = cachedSheet;
         }
 
         let kith = null;
@@ -138,7 +160,7 @@ class SheetController extends Controller
         }
         let title = sheet.name;
 
-        res.render('sheets/kithainsheet', {hash:req.params.hash, sheet, sheetStructure, kith, house, arts, title});
+        res.render('sheets/kithainsheet', {hash:req.params.hash, sheet, sheetStructure, kith, house, arts, title, nanoid});
     }
 
     async showSheet(req, res)

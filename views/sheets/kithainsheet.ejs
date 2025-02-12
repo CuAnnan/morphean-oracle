@@ -5,6 +5,33 @@
         cursor:pointer;
     }
 
+
+    @media print {
+        body {
+            font-size: 0.9em;
+        }
+
+        .rolling, .nav, .toggler
+        {
+            display: none;
+        }
+
+        .tab-content > .tab-pane {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            page-break-after: always;
+        }
+    }
+
+    @page
+    {
+        size: auto;   /* auto is the initial value */
+
+        /* this affects the margin in the printer settings */
+        margin: 10mm 10mm 10mm 10mm;
+    }
+
 </style>
 <script type="text/javascript">
     var nanoid="<%- hash %>";

@@ -32,5 +32,12 @@ router.get('/cantrip/:hash', (req, res, next)=>{
     })
 });
 
+router.get('/qrcode/:hash', (req, res, next)=>{
+    controller.getQRCode(req, res).catch((err)=>{
+        console.log(err);
+        res.json({err});
+    });
+});
+
 
 export default router;

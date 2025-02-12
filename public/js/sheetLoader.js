@@ -118,6 +118,43 @@ window.addEventListener('load', function(){
         }
     }
 
+    document.querySelectorAll('.traitBox').forEach(el=>{
+        el.addEventListener('click',()=>{
+            if(el.classList.contains('bxs-square'))
+            {
+                return;
+            }
+
+            if(el.classList.contains('bxs-x-square'))
+            {
+                el.classList.add('bx-square');
+                el.classList.remove('bxs-x-square');
+            }
+            else
+            {
+                el.classList.remove('bx-square');
+                el.classList.add('bxs-x-square');
+            }
+            let sibling = el.previousSibling;
+            while(sibling && !sibling.classList.contains('bxs-square'))
+            {
+                sibling.classList.remove('bx-square');
+                sibling.classList.add('bxs-x-square');
+                sibling = sibling.previousSibling;
+            }
+
+            sibling = el.nextSibling;
+            while(sibling && !sibling.classList.contains('bxs-square'))
+            {
+                sibling.classList.add('bx-square');
+                sibling.classList.remove('bxs-x-square');
+                sibling = sibling.nextSibling;
+            }
+
+
+        });
+    });
+
     document.querySelectorAll('.toggler').forEach(el=>{
         el.addEventListener('click', ()=>{
             let next = el.parentElement.parentElement.nextElementSibling;
