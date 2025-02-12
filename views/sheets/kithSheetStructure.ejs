@@ -13,15 +13,15 @@
         %><i class="trait bx bx-circle"></i><%
     }
 }
-let traitBoxes = function(trait, spent = 0)
+let traitBoxes = function(trait, spent = 0, fuel = '')
 {
     for(let i = 0; i < spent; i++)
     {
-        %><i class='traitBox trait bx bxs-x-square'></i><%
+        %><i class="traitBox trait bx bxs-x-square"<%- fuel?` data-fuel="${fuel}"`:''%>></i><%
     }
     for(let i = spent; i < trait.level; i++)
     {
-        %><i class="traitBox trait bx bx-square"></i><%
+        %><i class="traitBox trait bx bx-square"<%- fuel?` data-fuel="${fuel}"`:''%>></i><%
     }
     for(let i = trait.level ; i < 10; i++)
     {
@@ -152,7 +152,7 @@ let traitBoxes = function(trait, spent = 0)
             <div class="col text-center"><% traitDots(sheet.traits.glamour, 10) %></div>
         </div>
         <div class="row">
-            <div class="col text-center"><% traitBoxes(sheet.traits.glamour, sheet.glamourSpent) %></div>
+            <div class="col text-center"><% traitBoxes(sheet.traits.glamour, sheet.glamourSpent, 'glamourSpent') %></div>
         </div>
 
         <div class="row"><h4 class="col text-center traitName">Willpower</h4></div>
@@ -160,7 +160,7 @@ let traitBoxes = function(trait, spent = 0)
             <div class="col text-center"><% traitDots(sheet.traits.willpower, 10, sheet.imbalance) %></div>
         </div>
         <div class="row">
-            <div class="col text-center"><% traitBoxes(sheet.traits.willpower) %></div>
+            <div class="col text-center"><% traitBoxes(sheet.traits.willpower, sheet.willpowerSpent, 'willpowerSpent') %></div>
         </div>
 
         <div class="row"><h4 class="col text-center traitName">Nightmare</h4></div>

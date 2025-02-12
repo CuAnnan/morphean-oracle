@@ -2,7 +2,7 @@ import userHash from "../userHashFunction.js";
 import {SlashCommandBuilder} from 'discord.js';
 import { createRequire } from "module";
 import MongoConnectionFactory from "../MongoConnectionFactory.js";
-import QRCode from 'qrcode'
+import QRCode from 'qrcode';
 
 const require = createRequire(import.meta.url);
 const {webPresence} = require('../conf.json');
