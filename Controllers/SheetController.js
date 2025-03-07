@@ -41,9 +41,9 @@ class SheetController extends Controller
 
     async getQRCode(req, res)
     {
-        const url = `${webPresence}/sheets/view/${req.params.nanoid}`;
+        const url = `${webPresence}/sheets/view/${req.params.hash}`;
         const qrCode = await QRCode.toBuffer(url);
-        res.json({dataURL:qrCode});
+        res.send(qrCode);
     }
 
     async fetchNPCQrCode(req, res)
@@ -160,7 +160,7 @@ class SheetController extends Controller
         }
         let title = sheet.name;
 
-        res.render('sheets/kithainsheet', {hash:req.params.hash, sheet, sheetStructure, kith, house, arts, title, nanoid});
+        res.render('sheets/kithainsheet', {hash:req.params.hash, sheet, sheetStructure, kith, house, arts, title, npc:true});
     }
 
     async showSheet(req, res)
@@ -200,7 +200,7 @@ class SheetController extends Controller
         }
         let title = sheet.name;
 
-        res.render('sheets/kithainsheet', {hash:req.params.hash, sheet, sheetStructure, kith, house, arts, title});
+        res.render('sheets/kithainsheet', {hash:req.params.hash, sheet, sheetStructure, kith, house, arts, title, npc:false});
     }
 
     async fetchSheetJSON(req, res)

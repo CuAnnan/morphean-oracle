@@ -40,7 +40,7 @@ export default {
 
         if(Number.isNaN(parseInt(parts)))
         {
-            diff = diff?diff:6;
+            diff = diff?parseInt(diff):6;
             let poolArray = parts.split('+');
 
             let poolParts = [];
@@ -69,6 +69,7 @@ export default {
         }
 
         let pool = Object.assign({}, poolData, mods)
+        pool.diff = diff;
         let roll = new DiceRoll(pool);
         if(roll.dicePool >= 100)
         {
